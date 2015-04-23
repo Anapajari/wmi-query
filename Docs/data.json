@@ -1,0 +1,380 @@
+{
+    "project": {
+        "name": "wmi-query-0.1.0",
+        "description": "wmi query for nodejs",
+        "version": "0.1.0",
+        "url": "TODO"
+    },
+    "files": {
+        "src\\lib\\wmi.js": {
+            "name": "src\\lib\\wmi.js",
+            "modules": {
+                "wmi-query": 1
+            },
+            "classes": {
+                "Query": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        }
+    },
+    "modules": {
+        "wmi-query": {
+            "name": "wmi-query",
+            "submodules": {},
+            "classes": {
+                "Query": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "src\\lib\\wmi.js",
+            "line": 28
+        }
+    },
+    "classes": {
+        "Query": {
+            "name": "Query",
+            "shortname": "Query",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "wmi-query",
+            "namespace": "",
+            "file": "src\\lib\\wmi.js",
+            "line": 28,
+            "description": "Query class.\n<br>Usefull links :\n    <a href=\"http://blogs.technet.com/b/askperf/archive/2012/02/17/useful-wmic-queries.aspx\">usefull query examples</a> and \n    <a href=\"https://social.technet.microsoft.com/Forums/windowsserver/en-US/30273791-1952-4315-a5c3-7d809f9724c1/can-you-connect-to-wmi-remotely-using-a-local-user-account?forum=winserverManagement\">commons problems with wmi</a>",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "options",
+                    "description": "The object whose properties will be used to init the query",
+                    "type": "Object",
+                    "props": [
+                        {
+                            "name": "timeout",
+                            "description": "time out for query execution",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "5000"
+                        },
+                        {
+                            "name": "node",
+                            "description": "node(s) to query, can contains multiples server name separated by comma: \"pc1,pc2\"",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "verb",
+                            "description": "verb of the query, must be in Query.SUPPORTED_VERBS",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "alias",
+                            "description": "alias being queried",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "where",
+                            "description": "where clause, query will add parenthesis around it",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "field",
+                            "description": "field being queried, used mainly by \"get\" verb",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "action",
+                            "description": "action being executed, use mainly by \"call\" verb",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "format",
+                            "description": "query output format, must be in Query.SUPPORTED_FORMATS",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "cmd",
+                            "description": "manual command, will override mosts others options",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "parser",
+                            "description": "Function that will be used to parse cmd output",
+                            "type": "String|Function",
+                            "optional": true
+                        },
+                        {
+                            "name": "help",
+                            "description": "flag used when the cmd executed needs the \"/?\" option",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "classitems": [
+        {
+            "file": "src\\lib\\wmi.js",
+            "line": 5,
+            "description": "1/ for query example : \n   http://blogs.technet.com/b/askperf/archive/2012/02/17/useful-wmic-queries.aspx\n2/ for commons problems :  \n   https://social.technet.microsoft.com/Forums/windowsserver/en-US/30273791-1952-4315-a5c3-7d809f9724c1/can-you-connect-to-wmi-remotely-using-a-local-user-account?forum=winserverManagement\n4/ for switch to implement \n* TODO\nTODO1 : add yuidoc tags to generate documentation\nTODO2 : build npm package (https://quickleft.com/blog/creating-and-publishing-a-node-js-module/)\nTODO3 : implement parser function adding into WMIResult and WMIError\nTODO3 : merging WMIResult and WMIError as they behave almost the same way.\n        findParserForQuery might need more info from query.\n        this may also need a better way to store parser, maybe some key/function object instead\n        of storing them in the prototype.\nTODO3 : add support of specific xsl\nTODO3 : add missing switch \n        see https://technet.microsoft.com/en-us/library/cc787035%28v=ws.10%29.aspx",
+            "class": "Query"
+        },
+        {
+            "file": "src\\lib\\wmi.js",
+            "line": 89,
+            "itemtype": "property",
+            "name": "node",
+            "type": "String",
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\lib\\wmi.js",
+            "line": 105,
+            "itemtype": "property",
+            "name": "where",
+            "type": "String",
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\lib\\wmi.js",
+            "line": 124,
+            "itemtype": "property",
+            "name": "field",
+            "type": "String",
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\lib\\wmi.js",
+            "line": 142,
+            "itemtype": "property",
+            "name": "format",
+            "type": "String",
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\lib\\wmi.js",
+            "line": 158,
+            "itemtype": "property",
+            "name": "cmd",
+            "type": "String",
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\lib\\wmi.js",
+            "line": 186,
+            "itemtype": "property",
+            "name": "verb",
+            "type": "String",
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\lib\\wmi.js",
+            "line": 201,
+            "itemtype": "property",
+            "name": "parser",
+            "type": "String|Function",
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\lib\\wmi.js",
+            "line": 217,
+            "description": "use object properties to build command",
+            "itemtype": "method",
+            "name": "buildCmd",
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\lib\\wmi.js",
+            "line": 251,
+            "description": "check command format according to format property",
+            "itemtype": "method",
+            "name": "checkCmd",
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\lib\\wmi.js",
+            "line": 264,
+            "description": "append format instruction to cmd.\nWeird usage of WINDIR path is explained <a href=\"http://stackoverflow.com/questions/9673057/wmic-error-invalid-xsl-format-in-windows7\">here</a>",
+            "itemtype": "method",
+            "name": "checkCmd",
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\lib\\wmi.js",
+            "line": 300,
+            "description": "exec command and fire callback option either with a WMIResult or WMIError object",
+            "itemtype": "method",
+            "name": "exec",
+            "params": [
+                {
+                    "name": "callback",
+                    "description": "callback to be executed once the command result has been parsed",
+                    "optional": true
+                }
+            ],
+            "async": 1,
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\lib\\wmi.js",
+            "line": 330,
+            "description": "List of the implemented verbs",
+            "itemtype": "property",
+            "name": "",
+            "static": 1,
+            "final": 1,
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\lib\\wmi.js",
+            "line": 337,
+            "description": "List of the supported output format",
+            "itemtype": "property",
+            "name": "",
+            "static": 1,
+            "final": 1,
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\lib\\wmi.js",
+            "line": 345,
+            "description": "list all available alias.\nNote : options param accept the same keys than Query constructor but some of them will be over-ride \nto produce expected result.",
+            "itemtype": "method",
+            "name": "listAlias",
+            "static": 1,
+            "params": [
+                {
+                    "name": "options",
+                    "description": "query options, see }Wut{{/crossLink}}",
+                    "type": "{#crossLink \"wmi-query.Query\""
+                },
+                {
+                    "name": "callback",
+                    "description": "callback to be executed once the command result has been parsed",
+                    "optional": true
+                }
+            ],
+            "async": 1,
+            "example": [
+                "\n    //get alias list and log their name\n    wmi.listAlias({node : 'localhost'}, function(r) {\n        for(var i=0; i<r.data.length; i++) {\n            console.log(r.data[i].alias, '-', r.data[i].caption);\n        }\n    });"
+            ],
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\lib\\wmi.js",
+            "line": 372,
+            "description": "build and exec get query",
+            "itemtype": "method",
+            "name": "get",
+            "static": 1,
+            "params": [
+                {
+                    "name": "options",
+                    "description": "query options, see }{{/crossLink}}",
+                    "type": "#crossLink \"Query\""
+                },
+                {
+                    "name": "callback",
+                    "description": "callback to be executed once the command result has been parsed",
+                    "optional": true
+                }
+            ],
+            "async": 1,
+            "example": [
+                "\n    //get os name of localhost, log the result\n    wmi.get({node : 'localhost', format:'JSON' , alias:'os', field:'Name'}, function(r) {\n        console.log(\"OS is :\", r.data[0].Name);\n    });\n    //get all stopped service on host\n    wmi.get({node:'host', alias:'service', where: 'Started=FALSE', format:'JSON'}, function(r) {\n        //...\n    });"
+            ],
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\lib\\wmi.js",
+            "line": 396,
+            "description": "build and exec call query",
+            "itemtype": "method",
+            "name": "call",
+            "static": 1,
+            "params": [
+                {
+                    "name": "options",
+                    "description": "query options, see }",
+                    "type": "#crossLink \"Query\""
+                },
+                {
+                    "name": "callback",
+                    "description": "callback to be executed once the command result has been parsed",
+                    "optional": true
+                }
+            ],
+            "async": 1,
+            "example": [
+                "\n    //start tomcat7 service and log the command's returned value\n    wmi.call({node:'host', alias:'service', where: 'Name=\"Tomcat7\"', action:'startservice', format:'JSON'}, function(r) {\n        console.log(\"Command \"+r.cmd+\" has returned \"+r.data.returnValue);\n    });"
+            ],
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\lib\\wmi.js",
+            "line": 417,
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\lib\\wmi.js",
+            "line": 517,
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\lib\\wmi.js",
+            "line": 558,
+            "class": "Query",
+            "module": "wmi-query"
+        }
+    ],
+    "warnings": [
+        {
+            "message": "Missing item type\n1/ for query example : \n   http://blogs.technet.com/b/askperf/archive/2012/02/17/useful-wmic-queries.aspx\n2/ for commons problems :  \n   https://social.technet.microsoft.com/Forums/windowsserver/en-US/30273791-1952-4315-a5c3-7d809f9724c1/can-you-connect-to-wmi-remotely-using-a-local-user-account?forum=winserverManagement\n4/ for switch to implement \n* TODO\nTODO1 : add yuidoc tags to generate documentation\nTODO2 : build npm package (https://quickleft.com/blog/creating-and-publishing-a-node-js-module/)\nTODO3 : implement parser function adding into WMIResult and WMIError\nTODO3 : merging WMIResult and WMIError as they behave almost the same way.\n        findParserForQuery might need more info from query.\n        this may also need a better way to store parser, maybe some key/function object instead\n        of storing them in the prototype.\nTODO3 : add support of specific xsl\nTODO3 : add missing switch \n        see https://technet.microsoft.com/en-us/library/cc787035%28v=ws.10%29.aspx",
+            "line": " src\\lib\\wmi.js:5"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src\\lib\\wmi.js:417"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src\\lib\\wmi.js:517"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src\\lib\\wmi.js:558"
+        }
+    ]
+}

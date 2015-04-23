@@ -1,0 +1,16 @@
+{
+  "name": "wmi-query",
+  "version": "0.1.0",
+  "description": "Easy WMI query. Warning this uses wmic so it must be run on a windows system",
+  "main": "lib/wmi.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "wmi",
+    "query",
+    "wmic"
+  ],
+  "author": "Matthieu Bourgeois",
+  "license": "MIT"
+}
