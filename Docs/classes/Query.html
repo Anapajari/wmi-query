@@ -39,6 +39,7 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/Query.html">Query</a></li>
+                                <li><a href="../classes/WMIResult.html">WMIResult</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -81,7 +82,7 @@
 
 
         <div class="foundat">
-            Defined in: <a href="../files/src_lib_wmi.js.html#l28"><code>src\lib\wmi.js:28</code></a>
+            Defined in: <a href="../files/src_wmi-query.js.html#l43"><code>src\wmi-query.js:43</code></a>
         </div>
 
             Module: <a href="../modules/wmi-query.html">wmi-query</a>
@@ -90,191 +91,224 @@
 
 
 <div class="box intro">
-    <p>Query class.
+    <p>Query is the main entity of this module..
 <br>Usefull links :
-    <a href="http://blogs.technet.com/b/askperf/archive/2012/02/17/useful-wmic-queries.aspx">usefull query examples</a> and 
-    <a href="https://social.technet.microsoft.com/Forums/windowsserver/en-US/30273791-1952-4315-a5c3-7d809f9724c1/can-you-connect-to-wmi-remotely-using-a-local-user-account?forum=winserverManagement">commons problems with wmi</a></p>
+<br> <a href="http://blogs.technet.com/b/askperf/archive/2012/02/17/useful-wmic-queries.aspx"> query examples</a> and
+<a href="https://social.technet.microsoft.com/Forums/windowsserver/en-US/30273791-1952-4315-a5c3-7d809f9724c1/can-you-connect-to-wmi-remotely-using-a-local-user-account?forum=winserverManagement">commons problems with wmi</a></p>
 
 </div>
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_Query" class="method item">
-            <h3 class="name"><code>Query</code></h3>
-        
-                <div class="args">
-                    <span class="paren">(</span><ul class="args-list inline commas">
-                        <li class="arg">
-                                <code>options</code>
-                        </li>
-                    </ul><span class="paren">)</span>
-                </div>
-        
-        
-        
-        
-        
-        
-        
-        
-            <div class="meta">
-                        <p>
-                        Defined in
-                <a href="../files/src_lib_wmi.js.html#l28"><code>src\lib\wmi.js:28</code></a>
-                </p>
-        
-        
-        
-            </div>
-        
-            <div class="description">
-                
-            </div>
-        
-                <div class="params">
-                    <h4>Parameters:</h4>
-        
-                    <ul class="params-list">
-                        <li class="param">
-                                <code class="param-name">options</code>
-                                <span class="type">Object</span>
-        
-        
-                            <div class="param-description">
-                                <p>The object whose properties will be used to init the query</p>
-        
-                            </div>
-        
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name optional">[timeout=5000]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>time out for query execution</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[node]</code>
-                                            <span class="type">String</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>node(s) to query, can contains multiples server name separated by comma: &quot;pc1,pc2&quot;</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[verb]</code>
-                                            <span class="type">String</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>verb of the query, must be in Query.SUPPORTED_VERBS</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[alias]</code>
-                                            <span class="type">String</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>alias being queried</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[where]</code>
-                                            <span class="type">String</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>where clause, query will add parenthesis around it</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[field]</code>
-                                            <span class="type">String</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>field being queried, used mainly by &quot;get&quot; verb</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[action]</code>
-                                            <span class="type">String</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>action being executed, use mainly by &quot;call&quot; verb</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[format]</code>
-                                            <span class="type">String</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>query output format, must be in Query.SUPPORTED_FORMATS</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[cmd]</code>
-                                            <span class="type">String</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>manual command, will override mosts others options</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[parser]</code>
-                                            <span class="type">String | Function</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Function that will be used to parse cmd output</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[help=false]</code>
-                                            <span class="type">Boolean</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>flag used when the cmd executed needs the &quot;/?&quot; option</p>
-        
-                                        </div>
-        
-                                    </li>
-                                </ul>
-                        </li>
-                    </ul>
-                </div>
-        
-        
-        
+<div id="method_Query" class="method item">
+    <h3 class="name"><code>Query</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>options</code>
+                </li>
+            </ul><span class="paren">)</span>
         </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_wmi-query.js.html#l43"><code>src\wmi-query.js:43</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">options</code>
+                        <span class="type">Object</span>
+
+
+                    <div class="param-description">
+                        <p>The object whose properties will be used to init the query</p>
+
+                    </div>
+
+                        <ul class="params-list">
+                            <li class="param">
+                                    <code class="param-name optional">[timeout=5000]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>time out for query execution</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[node]</code>
+                                    <span class="type">String | Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>node(s) to query, can contains multiples server name separated by comma: &quot;pc1,pc2&quot; or array of node</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[verb]</code>
+                                    <span class="type">String</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>verb of the query, must be in Query.SUPPORTED_VERBS</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[alias]</code>
+                                    <span class="type">String</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>alias being queried</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[where]</code>
+                                    <span class="type">String | Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>where clause, query will add parenthesis around it</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[field]</code>
+                                    <span class="type">String | Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>field being queried, used mainly by &quot;get&quot; verb</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[action]</code>
+                                    <span class="type">String</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>action being executed, use mainly by &quot;call&quot; verb</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[format=&#x27;JSON&#x27;]</code>
+                                    <span class="type">String</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>query output, must be in Query.SUPPORTED_FORMATS or be a valid path to a XSL file (in this case the output will default to raw).</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[cmd]</code>
+                                    <span class="type">String</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>manual command, will override mosts others options</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[parser]</code>
+                                    <span class="type">String | Function</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Function that will be used to parse cmd output</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[help=false]</code>
+                                    <span class="type">Boolean</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>flag used when the cmd executed needs the &quot;/?&quot; option</p>
+
+                                </div>
+
+                            </li>
+                        </ul>
+                </li>
+            </ul>
+        </div>
+
+
+
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>//requiring module
+var wq = require(&quot;wmi-query&quot;);
+//implements of query describe in first link
+//using static get method
+wq.get({&quot;alias&quot;:&quot;baseboard&quot;, &quot;field&quot;:&quot;Manufacturer, Model, Name, PartNumber, slotlayout, serialnumber, poweredon&quot;}, function(r) {
+    //...
+});
+//manual execution and field as array
+var myQuery = new wq({&quot;alias&quot;:&quot;bios&quot;, &quot;verb&quot;:&quot;get&quot;, &quot;field&quot;: [&quot;name&quot;, &quot;version&quot;, &quot;serialnumber&quot;]})
+myQuery.exec(function(r) { 
+    // ... 
+});
+//execution of manual query
+var myQuery = new ws({&quot;cmd&quot;:&quot;cdrom get Name, drive, Volumename&quot;});
+myQuery.exec(function(r) { 
+   // ... 
+});
+//static get with where clause
+wq.get({
+        &quot;alias&quot;:&quot;datafile&quot;, 
+        &quot;verb&quot;:&quot;get&quot;, 
+        &quot;field&quot;:&quot;Archive, FileSize, FileType, InstallDate, Readable, Writeable, System, Version&quot;
+        &quot;where&quot;:&quot;name='c:\\boot.ini'&quot;
+    }, function(r) {
+    //...
+ });</code></pre>
+
+            </div>
+        </div>
+</div>
     </div>
 
 <div id="classdocs" class="tabview">
@@ -293,6 +327,10 @@
                     <h3>Methods</h3>
 
                     <ul class="index-list methods">
+                            <li class="index-item method private">
+                                <a href="#method_appendFormat">appendFormat</a>
+
+                            </li>
                             <li class="index-item method">
                                 <a href="#method_buildCmd">buildCmd</a>
 
@@ -302,11 +340,7 @@
 
                                     <span class="flag static">static</span>
                             </li>
-                            <li class="index-item method">
-                                <a href="#method_checkCmd">checkCmd</a>
-
-                            </li>
-                            <li class="index-item method">
+                            <li class="index-item method private">
                                 <a href="#method_checkCmd">checkCmd</a>
 
                             </li>
@@ -351,6 +385,16 @@
                                 <a href="#property_parser">parser</a>
 
                             </li>
+                            <li class="index-item property private">
+                                <a href="#property_SUPPORTED_FORMATS">SUPPORTED_FORMATS</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item property private">
+                                <a href="#property_SUPPORTED_VERBS">SUPPORTED_VERBS</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
                             <li class="index-item property">
                                 <a href="#property_verb">verb</a>
 
@@ -358,16 +402,6 @@
                             <li class="index-item property">
                                 <a href="#property_where">where</a>
 
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_"></a>
-
-                                    <span class="flag static">static</span>
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_"></a>
-
-                                    <span class="flag static">static</span>
                             </li>
                     </ul>
                 </div>
@@ -378,6 +412,39 @@
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
 
+<div id="method_appendFormat" class="method item private">
+    <h3 class="name"><code>appendFormat</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_wmi-query.js.html#l313"><code>src\wmi-query.js:313</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>append format instruction to cmd.
+Weird usage of WINDIR path is explained <a href="http://stackoverflow.com/questions/9673057/wmic-error-invalid-xsl-format-in-windows7">here</a></p>
+
+    </div>
+
+
+
+
+</div>
 <div id="method_buildCmd" class="method item">
     <h3 class="name"><code>buildCmd</code></h3>
 
@@ -388,12 +455,13 @@
 
 
 
+        <span class="flag chainable">chainable</span>
 
 
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_lib_wmi.js.html#l217"><code>src\lib\wmi.js:217</code></a>
+        <a href="../files/src_wmi-query.js.html#l262"><code>src\wmi-query.js:262</code></a>
         </p>
 
 
@@ -435,7 +503,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_lib_wmi.js.html#l396"><code>src\lib\wmi.js:396</code></a>
+        <a href="../files/src_wmi-query.js.html#l445"><code>src\wmi-query.js:445</code></a>
         </p>
 
 
@@ -483,21 +551,22 @@
             <h4>Example:</h4>
 
             <div class="example-content">
-                <pre class="code prettyprint"><code>//start tomcat7 service and log the command&#39;s returned value
-wmi.call({node:&#39;host&#39;, alias:&#39;service&#39;, where: &#39;Name=&quot;Tomcat7&quot;&#39;, action:&#39;startservice&#39;, format:&#39;JSON&#39;}, function(r) {
+                <pre class="code prettyprint"><code>//start tomcat7 service and log the command's returned value
+wmi.call({node:'host', alias:'service', where: 'Name=&quot;Tomcat7&quot;', action:'startservice', format:'JSON'}, function(r) {
     console.log(&quot;Command &quot;+r.cmd+&quot; has returned &quot;+r.data.returnValue);
-});
-</code></pre>
+});</code></pre>
+
             </div>
         </div>
 </div>
-<div id="method_checkCmd" class="method item">
+<div id="method_checkCmd" class="method item private">
     <h3 class="name"><code>checkCmd</code></h3>
 
         <span class="paren">()</span>
 
 
 
+        <span class="flag private">private</span>
 
 
 
@@ -506,7 +575,7 @@ wmi.call({node:&#39;host&#39;, alias:&#39;service&#39;, where: &#39;Name=&quot;T
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_lib_wmi.js.html#l251"><code>src\lib\wmi.js:251</code></a>
+        <a href="../files/src_wmi-query.js.html#l299"><code>src\wmi-query.js:299</code></a>
         </p>
 
 
@@ -515,38 +584,6 @@ wmi.call({node:&#39;host&#39;, alias:&#39;service&#39;, where: &#39;Name=&quot;T
 
     <div class="description">
         <p>check command format according to format property</p>
-
-    </div>
-
-
-
-
-</div>
-<div id="method_checkCmd" class="method item">
-    <h3 class="name"><code>checkCmd</code></h3>
-
-        <span class="paren">()</span>
-
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_lib_wmi.js.html#l264"><code>src\lib\wmi.js:264</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>append format instruction to cmd.
-Weird usage of WINDIR path is explained <a href="http://stackoverflow.com/questions/9673057/wmic-error-invalid-xsl-format-in-windows7">here</a></p>
 
     </div>
 
@@ -576,7 +613,7 @@ Weird usage of WINDIR path is explained <a href="http://stackoverflow.com/questi
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_lib_wmi.js.html#l300"><code>src\lib\wmi.js:300</code></a>
+        <a href="../files/src_wmi-query.js.html#l349"><code>src\wmi-query.js:349</code></a>
         </p>
 
 
@@ -584,7 +621,10 @@ Weird usage of WINDIR path is explained <a href="http://stackoverflow.com/questi
     </div>
 
     <div class="description">
-        <p>exec command and fire callback option either with a WMIResult or WMIError object</p>
+        <p>exec command and fire callback.
+Params of the callback is an object with a cmd key containing de wmic command and either
+a data key containing parsed success output if no error occured
+an err key containing parsed error output if an error occured</p>
 
     </div>
 
@@ -636,7 +676,7 @@ Weird usage of WINDIR path is explained <a href="http://stackoverflow.com/questi
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_lib_wmi.js.html#l372"><code>src\lib\wmi.js:372</code></a>
+        <a href="../files/src_wmi-query.js.html#l423"><code>src\wmi-query.js:423</code></a>
         </p>
 
 
@@ -654,11 +694,11 @@ Weird usage of WINDIR path is explained <a href="http://stackoverflow.com/questi
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">options</code>
-                        <span class="type">#crossLink "Query"</span>
+                        <span class="type">Object</span>
 
 
                     <div class="param-description">
-                        <p>query options, see }{{/crossLink}}</p>
+                        <p>query options, see Query constructor</p>
 
                     </div>
 
@@ -685,14 +725,14 @@ Weird usage of WINDIR path is explained <a href="http://stackoverflow.com/questi
 
             <div class="example-content">
                 <pre class="code prettyprint"><code>//get os name of localhost, log the result
-wmi.get({node : &#39;localhost&#39;, format:&#39;JSON&#39; , alias:&#39;os&#39;, field:&#39;Name&#39;}, function(r) {
+wmi.get({node : 'localhost', format:'JSON' , alias:'os', field:'Name'}, function(r) {
     console.log(&quot;OS is :&quot;, r.data[0].Name);
 });
 //get all stopped service on host
-wmi.get({node:&#39;host&#39;, alias:&#39;service&#39;, where: &#39;Started=FALSE&#39;, format:&#39;JSON&#39;}, function(r) {
+wmi.get({node:'host', alias:'service', where: 'Started=FALSE', format:'JSON'}, function(r) {
     //...
-});
-</code></pre>
+});</code></pre>
+
             </div>
         </div>
 </div>
@@ -722,7 +762,7 @@ wmi.get({node:&#39;host&#39;, alias:&#39;service&#39;, where: &#39;Started=FALSE
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_lib_wmi.js.html#l345"><code>src\lib\wmi.js:345</code></a>
+        <a href="../files/src_wmi-query.js.html#l396"><code>src\wmi-query.js:396</code></a>
         </p>
 
 
@@ -731,7 +771,7 @@ wmi.get({node:&#39;host&#39;, alias:&#39;service&#39;, where: &#39;Started=FALSE
 
     <div class="description">
         <p>list all available alias.
-Note : options param accept the same keys than Query constructor but some of them will be over-ride 
+Note : options param accept the same keys than Query constructor but some of them will be over-ride
 to produce expected result.</p>
 
     </div>
@@ -742,11 +782,11 @@ to produce expected result.</p>
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">options</code>
-                        <span class="type">#crossLink "wmi-query.Query"</span>
+                        <span class="type">Object</span>
 
 
                     <div class="param-description">
-                        <p>query options, see }Wut{{/crossLink}}</p>
+                        <p>query options, see Query constructor</p>
 
                     </div>
 
@@ -773,12 +813,12 @@ to produce expected result.</p>
 
             <div class="example-content">
                 <pre class="code prettyprint"><code>//get alias list and log their name
-wmi.listAlias({node : &#39;localhost&#39;}, function(r) {
+wmi.listAlias({node : 'localhost'}, function(r) {
     for(var i=0; i&lt;r.data.length; i++) {
-        console.log(r.data[i].alias, &#39;-&#39;, r.data[i].caption);
+        console.log(r.data[i].alias, '-', r.data[i].caption);
     }
-});
-</code></pre>
+});</code></pre>
+
             </div>
         </div>
 </div>
@@ -798,7 +838,7 @@ wmi.listAlias({node : &#39;localhost&#39;}, function(r) {
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lib_wmi.js.html#l158"><code>src\lib\wmi.js:158</code></a>
+                            <a href="../files/src_wmi-query.js.html#l204"><code>src\wmi-query.js:204</code></a>
                             </p>
                     
                     
@@ -822,7 +862,7 @@ wmi.listAlias({node : &#39;localhost&#39;}, function(r) {
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lib_wmi.js.html#l124"><code>src\lib\wmi.js:124</code></a>
+                            <a href="../files/src_wmi-query.js.html#l166"><code>src\wmi-query.js:166</code></a>
                             </p>
                     
                     
@@ -846,7 +886,7 @@ wmi.listAlias({node : &#39;localhost&#39;}, function(r) {
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lib_wmi.js.html#l142"><code>src\lib\wmi.js:142</code></a>
+                            <a href="../files/src_wmi-query.js.html#l184"><code>src\wmi-query.js:184</code></a>
                             </p>
                     
                     
@@ -870,7 +910,7 @@ wmi.listAlias({node : &#39;localhost&#39;}, function(r) {
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lib_wmi.js.html#l89"><code>src\lib\wmi.js:89</code></a>
+                            <a href="../files/src_wmi-query.js.html#l131"><code>src\wmi-query.js:131</code></a>
                             </p>
                     
                     
@@ -894,7 +934,7 @@ wmi.listAlias({node : &#39;localhost&#39;}, function(r) {
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lib_wmi.js.html#l201"><code>src\lib\wmi.js:201</code></a>
+                            <a href="../files/src_wmi-query.js.html#l246"><code>src\wmi-query.js:246</code></a>
                             </p>
                     
                     
@@ -902,6 +942,62 @@ wmi.listAlias({node : &#39;localhost&#39;}, function(r) {
                     
                         <div class="description">
                             
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_SUPPORTED_FORMATS" class="property item private">
+                        <h3 class="name"><code>SUPPORTED_FORMATS</code></h3>
+                        <span class="type">Unknown</span>
+                    
+                    
+                            <span class="flag private">private</span>
+                    
+                            <span class="flag final">final</span>
+                    
+                            <span class="flag static">static</span>
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_wmi-query.js.html#l387"><code>src\wmi-query.js:387</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>List of the supported output format</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_SUPPORTED_VERBS" class="property item private">
+                        <h3 class="name"><code>SUPPORTED_VERBS</code></h3>
+                        <span class="type">Unknown</span>
+                    
+                    
+                            <span class="flag private">private</span>
+                    
+                            <span class="flag final">final</span>
+                    
+                            <span class="flag static">static</span>
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_wmi-query.js.html#l379"><code>src\wmi-query.js:379</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>List of the implemented verbs</p>
+                    
                         </div>
                     
                     
@@ -918,7 +1014,7 @@ wmi.listAlias({node : &#39;localhost&#39;}, function(r) {
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lib_wmi.js.html#l186"><code>src\lib\wmi.js:186</code></a>
+                            <a href="../files/src_wmi-query.js.html#l232"><code>src\wmi-query.js:232</code></a>
                             </p>
                     
                     
@@ -942,7 +1038,7 @@ wmi.listAlias({node : &#39;localhost&#39;}, function(r) {
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lib_wmi.js.html#l105"><code>src\lib\wmi.js:105</code></a>
+                            <a href="../files/src_wmi-query.js.html#l147"><code>src\wmi-query.js:147</code></a>
                             </p>
                     
                     
@@ -950,60 +1046,6 @@ wmi.listAlias({node : &#39;localhost&#39;}, function(r) {
                     
                         <div class="description">
                             
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_" class="property item">
-                        <h3 class="name"><code></code></h3>
-                        <span class="type">Unknown</span>
-                    
-                    
-                    
-                            <span class="flag final">final</span>
-                    
-                            <span class="flag static">static</span>
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_lib_wmi.js.html#l330"><code>src\lib\wmi.js:330</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>List of the implemented verbs</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_" class="property item">
-                        <h3 class="name"><code></code></h3>
-                        <span class="type">Unknown</span>
-                    
-                    
-                    
-                            <span class="flag final">final</span>
-                    
-                            <span class="flag static">static</span>
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_lib_wmi.js.html#l337"><code>src\lib\wmi.js:337</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>List of the supported output format</p>
-                    
                         </div>
                     
                     

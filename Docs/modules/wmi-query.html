@@ -39,6 +39,7 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/Query.html">Query</a></li>
+                                <li><a href="../classes/WMIResult.html">WMIResult</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -81,7 +82,7 @@
 
 
         <div class="foundat">
-            Defined in: <a href="../files/src_lib_wmi.js.html#l28"><code>src\lib\wmi.js:28</code></a>
+            Defined in: <a href="../files/src_wmi-query.js.html#l465"><code>src\wmi-query.js:465</code></a>
         </div>
 
 </div>
@@ -91,6 +92,33 @@
     
 </div>
 
+    <div class="example">
+        <h4>Example:</h4>
+        <div class="example-content">
+            <pre class="code prettyprint"><code>//requiring module
+var wmi = require(&quot;wmi-query&quot;);
+//log os of localhost
+wmi.get({node : 'localhost', format:'JSON' , alias:'os', field:'Name'}, function(r) {
+    console.log('OS is', r.data[0].Name);
+});
+//list of available alias on remote server
+wmi.listAlias({node : 'remote_computer', format:'JSON' }, function(r) {
+    for(var i=0; i&lt;r.data.length; i++) {
+        console.log(r.data[i].alias);
+    }
+});
+//start a service named demo on remote computer
+wmi.call({node:&quot;remote_computer&quot;, alias:'service', where: 'Name=&quot;example&quot;', action:'startservice', format:'JSON'}, function(r) {
+    if (r.err) {
+        console.log(&quot;Start service failed with message:&quot;, r.err);
+    } else {
+        console.log(&quot;Command has returned
+    }
+});
+</code></pre>
+
+        </div>
+    </div>
 
 <div class="yui3-g">
     <div class="yui3-u-1-2">
@@ -100,6 +128,11 @@
                 <li class="module-class">
                     <a href="../classes/Query.html">
                         Query
+                    </a>
+                </li>
+                <li class="module-class">
+                    <a href="../classes/WMIResult.html">
+                        WMIResult
                     </a>
                 </li>
             </ul>

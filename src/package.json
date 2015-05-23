@@ -1,16 +1,22 @@
 {
   "name": "wmi-query",
-  "version": "0.1.0",
+  "version": "<%= pkg.version %>",
   "description": "Easy WMI query. Warning this uses wmic so it must be run on a windows system",
-  "main": "lib/wmi.js",
+  "main": "wmi-query.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "nodeunit"
+  },
+  "repository": {
+      "type": "git",
+      "url": "git://github.com/Anapajari/wmi-query.git"
   },
   "keywords": [
     "wmi",
-    "query",
+    "wmi query",
+    "Windows Management Instrumentation",
+    "Web-Based Enterprise Management"
     "wmic"
   ],
-  "author": "Matthieu Bourgeois",
+  "author": "Matthieu Bourgeois <matthieu.bourgeois@gmail.com>",
   "license": "MIT"
 }

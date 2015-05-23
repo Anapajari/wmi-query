@@ -1,47 +1,92 @@
-/**
-@module wmi-query
- 
- (C) 2014 Matthieu Bourgeois
+/* wmi-query
+ (C) 2015 Matthieu Bourgeois
  MIT LICENCE
- 
-
 #######  TODO
-  TODO1 : finish yuidoc tags
-  TODO2 : switch to ES6 class
-  TODO2 : build npm package (https://quickleft.com/blog/creating-and-publishing-a-node-js-module/)
-  TODO3 : merging WMIResult and WMIError as they behave almost the same way.
-          findParserForQuery might need more info from query.
-          this may also need a better way to store parser, maybe some key/function object instead
-          of storing them in the prototype.of WMIResult and WMIError
-  TODO3 : add support of specific xsl 
+  TODO1 : build npm package 
+          https://quickleft.com/blog/creating-and-publishing-a-node-js-module/
+          https://github.com/Jam3/jam3-lesson-module-creation
+  TODO3 : test support of specific xsl 
   TODO3 : add missing switch especially output to file
           see https://technet.microsoft.com/en-us/library/cc787035%28v=ws.10%29.aspx
-**/
+*/
 
 var util = require('util'),
-    cp_execSync = require('child_process').execSync,
     cp_exec = require('child_process').exec;
 
 /**
-Query class.
+@module wmi-query
+@description Easy WMI query. Warning this uses wmic so it must be run on a windows system.
+@example
+    //requiring module
+    var wmi = require("wmi-query");
+    //log os of localhost
+    wmi.get({node : 'localhost', format:'JSON' , alias:'os', field:'Name'}, function(r) {
+        console.log('OS is', r.data[0].Name);
+    });
+    //list of available alias on remote server
+    wmi.listAlias({node : 'remote_computer', format:'JSON' }, function(r) {
+        for(var i=0; i<r.data.length; i++) {
+            console.log(r.data[i].alias);
+        }
+    });
+    //start a service named demo on remote computer
+    wmi.call({node:"remote_computer", alias:'service', where: 'Name="example"', action:'startservice', format:'JSON'}, function(r) {
+        if (r.err) {
+            console.log("Start service failed with message:", r.err);
+        } else {
+            console.log("Command has returned
+        }
+    });
+
+*/
+
+/**
+Query is the main entity of this module..
 <br>Usefull links :
-    <a href="http://blogs.technet.com/b/askperf/archive/2012/02/17/useful-wmic-queries.aspx">usefull query examples</a> and 
+<br> <a href="http://blogs.technet.com/b/askperf/archive/2012/02/17/useful-wmic-queries.aspx"> query examples</a> and 
     <a href="https://social.technet.microsoft.com/Forums/windowsserver/en-US/30273791-1952-4315-a5c3-7d809f9724c1/can-you-connect-to-wmi-remotely-using-a-local-user-account?forum=winserverManagement">commons problems with wmi</a>
 
 @class Query
 @constructor
 @param options {Object} The object whose properties will be used to init the query
 @param [options.timeout=5000] {Number} time out for query execution
-@param [options.node] {String} node(s) to query, can contains multiples server name separated by comma: "pc1,pc2"
+@param [options.node] {String|array} node(s) to query, can contains multiples server name separated by comma: "pc1,pc2" or array of node
 @param [options.verb] {String} verb of the query, must be in Query.SUPPORTED_VERBS
 @param [options.alias] {String} alias being queried
-@param [options.where] {String} where clause, query will add parenthesis around it
-@param [options.field] {String} field being queried, used mainly by "get" verb
+@param [options.where] {String|Array} where clause, query will add parenthesis around it
+@param [options.field] {String|Array} field being queried, used mainly by "get" verb
 @param [options.action] {String} action being executed, use mainly by "call" verb
-@param [options.format] {String} query output format, must be in Query.SUPPORTED_FORMATS
+@param [options.format='JSON'] {String} query output, must be in Query.SUPPORTED_FORMATS or be a valid path to a XSL file (in this case the output will default to raw).
 @param [options.cmd] {String} manual command, will override mosts others options
 @param [options.parser] {String|Function} Function that will be used to parse cmd output
 @param [options.help=false] {Boolean} flag used when the cmd executed needs the "/?" option
+@example
+    //requiring module
+    var wq = require("wmi-query");
+    //implements of query describe in first link
+    //using static get method
+    wq.get({"alias":"baseboard", "field":"Manufacturer, Model, Name, PartNumber, slotlayout, serialnumber, poweredon"}, function(r) {
+        //...
+    });
+    //manual execution and field as array
+    var myQuery = new wq({"alias":"bios", "verb":"get", "field": ["name", "version", "serialnumber"]})
+    myQuery.exec(function(r) { 
+        // ... 
+    });
+    //execution of manual query
+    var myQuery = new ws({"cmd":"cdrom get Name, drive, Volumename"});
+    myQuery.exec(function(r) { 
+       // ... 
+    });
+    //static get with where clause
+    wq.get({
+            "alias":"datafile", 
+            "verb":"get", 
+            "field":"Archive, FileSize, FileType, InstallDate, Readable, Writeable, System, Version"
+            "where":"name='c:\\boot.ini'"
+        }, function(r) {
+        //...
+     });
 */
 var Query = function(options) {
     this.timeout = 5000;
@@ -56,7 +101,7 @@ var Query = function(options) {
     this._parser = null;
     this._help = false;
     if (options && typeof options == 'object') {
-        if (options.verb) 
+        if (options.timeout) 
             this.timeout = options.timeout;
         if (options.verb) 
             this.verb = options.verb;
@@ -105,8 +150,8 @@ Object.defineProperties(Query.prototype, {
     */
     where : {
         set : function (w) {
-            //todo handle and/or, for the moment only supporting and
             if (util.isArray(w)) {
+                //todo handle "and/or", for the moment only supporting "and"
                 this._where = w.join(' and ');
             } else if (typeof w == 'string') {
                 this._where = w;
@@ -144,6 +189,10 @@ Object.defineProperties(Query.prototype, {
         set : function(f) {
             if (Query.SUPPORTED_FORMATS.indexOf(f) != -1) {
                 this._format = f;
+            } else if (fs.lstatSync(f).isFile()) {
+                //shoud check for extension and file readable also
+                this.specificXSL = f;
+                this._format = 'RAW';
             } else {
                 this._format = 'JSON';
             }
@@ -193,7 +242,6 @@ Object.defineProperties(Query.prototype, {
         get : function() {
             return this._verb;
         }
-
     },
     /**
     @property parser
@@ -217,8 +265,9 @@ use object properties to build command
 @chainable
 */
 Query.prototype.buildCmd = function() {
+    var cmd;
     if (!this.cmd) {
-        var cmd = 'wmic ';
+        cmd = 'wmic ';
         if (this._node) {
             cmd += ' /node:'+this._node;
         }
@@ -250,6 +299,7 @@ Query.prototype.buildCmd = function() {
 /**
 check command format according to format property
 @method checkCmd
+@private
 */
 Query.prototype.checkCmd = function() {
     if (this.format) {
@@ -263,8 +313,8 @@ Query.prototype.checkCmd = function() {
 /**
 append format instruction to cmd.
 Weird usage of WINDIR path is explained <a href="http://stackoverflow.com/questions/9673057/wmic-error-invalid-xsl-format-in-windows7">here</a>
-
-@method checkCmd
+@method appendFormat
+@private
 */
 Query.prototype.appendFormat = function() {
     if (this._help) {
@@ -290,7 +340,7 @@ Query.prototype.appendFormat = function() {
         } else if (this._format == 'CSV'){
             this._cmd += ' /format:"%WINDIR%\\System32\\wbem\\en-us\\csv"';
         } else if (this.specificXSL) {
-            //TODO3 : shoud do a 'fs.lstatSync(this.specificXSL).isFile() though
+            //valid file path has been check in format setter
             this._cmd += '/format:"'+this.specificXSL+'"';
         }
     }
@@ -299,8 +349,8 @@ Query.prototype.appendFormat = function() {
 /**
 exec command and fire callback.
 Params of the callback is an object with a cmd key containing de wmic command and either
-a data key containing WMIResult data or 
-an err key containing WMIError data
+a data key containing parsed success output if no error occured
+an err key containing parsed error output if an error occured
 @method exec
 @param [callback] callback to be executed once the command result has been parsed
 @async
@@ -320,31 +370,28 @@ Query.prototype.exec = function(callback) {
     var q = this; //stored to be available in callback
     cp_exec(this.cmd,{"encoding":"utf8", "timeout": this.timeout}, function(err, stdout, stderr) {
         var error,
-            result;
-        if (err) {
-            error = new WMIError(err, q);
-            callback({cmd:q.cmd, err:error.data()});
-        } else {
-            result = new WMIResult(stdout, q);
-            //adding executed cmd
-            callback({cmd:q.cmd, data:result.data()});
-        }
+            result,
+            output = {err: err, stdout: stdout, stderr: stderr};
+        result = new WMIResult(output, q);
+        callback({cmd:q.cmd, err:result.error(), data:result.data()});
     });
 };
 /**
 List of the implemented verbs
-@property
+@property SUPPORTED_VERBS
 @static
+@private
 @final
 */
 Query.SUPPORTED_VERBS = ['get', 'call', 'NO_VERB'];
 /**
 List of the supported output format
-@property
+@property SUPPORTED_FORMATS
 @static
+@private
 @final
 */
-Query.SUPPORTED_FORMATS = ['XML', 'CSV', 'HFORM', 'HTABLE', 'RAW'];
+Query.SUPPORTED_FORMATS = ['XML', 'CSV', 'HFORM', 'HTABLE', 'JSON', 'RAW'];
 
 /**
 list all available alias.
@@ -413,19 +460,23 @@ Query.call = function(options, callback) {
     new Query(options).exec(callback);
 };
 
+  /*-------------Result class --------------- */
 
 /**
 WMI result class.
 @class WMIResult
 @constructor
-@param output {String} wmic command line output
+@param output {Object} object containing cmd output
+@param [output.err] {String} err output if an error occured
+@param [output.stdout] {String} output if command succeed
 @param query {Query} query object that has produced output
 */
 var WMIResult = function(output, query) {
     var format = query.format || 'JSON',
         verb = query.verb || 'get';
     this.parser = null;
-    this.output = output;
+    this.err = output.err;
+    this.output = output.stdout;
     //finding parser
     this.findParserFor(query);
 };
@@ -436,20 +487,37 @@ Returns parsed data
 @return {Object|String} result of the parsing
 */
 WMIResult.prototype.data = function() {
-    return this.parser(this.output);
+    if (this.err) {
+        return null;
+    } else {
+        return this.parser(this.output);
+    }
+};
+
+/**
+Returns parsed error
+@method error
+@return {Object|String} result of the parsing
+*/
+WMIResult.prototype.error = function() {
+    if (this.err) {
+        return this.errorToJSON(this.err);
+    } else {
+        return null;
+    }
 };
 
 /**
 Find best parser for query
-@method findParserForReturns 
+@method findParserFor
 @param {Query} query
 @return {Function} parser method
 */
 WMIResult.prototype.findParserFor= function (query) {
     if (typeof query.parser == 'string' && typeof this[query.parser] == 'function') {
         this.parser = this[query.parser];
-    } else if (typeof parser == 'function') {
-        this.parser = parser;
+    } else if (typeof query.parser == 'function') {
+        this.parser = query.parser;
     } else if (query.verb == 'get' && query.format == 'JSON') {
         this.parser = this.getToJSON;
     } else if (query.verb == 'call' && query.format == 'JSON') {
@@ -458,15 +526,37 @@ WMIResult.prototype.findParserFor= function (query) {
         this.parser = this.raw;
     }
 };
+
+/**
+command err to JSON parser
+@method errorToJSON
+@param {String} output
+@return {Object} result of parsing
+*/
+WMIResult.prototype.errorToJSON = function (err) {
+    var temp = WMIResult.splitOutput(err.message),
+        cleaned = [],
+        i;
+    //cleaning a few things
+    for (i=0;i<temp.length; i++) {
+        if (temp[i] && temp[i].indexOf('Command failed')!==-1) {
+            cleaned.push(temp[i]);
+        }
+    }
+    return {
+        message : cleaned.join("\r\n"),
+        code : err.code
+    };
+};
  
 /**
-get command output to JSON parser
+JSON parser for "get" command output 
 @method getToJSON
 @param {String} output
 @return {Object} result of parsing
 */
 WMIResult.prototype.getToJSON = function (output) {
-    var temp = cmdResultToArray(output),
+    var temp = WMIResult.splitOutput(output),
         separator, 
         i, 
         found,
@@ -492,14 +582,14 @@ WMIResult.prototype.getToJSON = function (output) {
     return result;
 };
 
-/**
-call command output to JSON parser
+/*
+JSON parser for "call" command output 
 @method callToJSON
 @param {String} output
 @return {Object} result of parsing
 */
 WMIResult.prototype.callToJSON = function(output) {
-    var temp = cmdResultToArray(output),
+    var temp = WMIResult.splitOutput(output),
         returnValue = null,
         i, 
         m;
@@ -517,7 +607,7 @@ WMIResult.prototype.callToJSON = function(output) {
 };
 
 /**
-get help command output to JSON parser
+JSON parser for "help" command output
 @method getHelpToJSON
 @param {String} output
 @return {Object} result of parsing
@@ -526,7 +616,7 @@ WMIResult.prototype.getHelpToJSON  = function (output) {
     //warning FIRST_ALIAS and LAST_ALIAS might change depending on system
     var FIRST_ALIAS = 'ALIAS',
         LAST_ALIAS = 'WMISET',
-        temp = cmdResultToArray(output),
+        temp = WMIResult.splitOutput(output),
         i, 
         content,
         foundStart= false,
@@ -556,15 +646,15 @@ WMIResult.prototype.getHelpToJSON  = function (output) {
 /**
 get raw result
 @method raw
-@param {String} output
-@return {String} cmd result, can have multiple content format. See Query.SUPPORTED_FORMATS
+@param {Object} output
+@return {Object} cmd result, can have multiple content format. See Query.SUPPORTED_FORMATS
 */
 WMIResult.prototype.raw = function(output) {
     return output;
 };
 
 /**
-use to join/split outputline
+use to join/split output lines
 @property LINESEP
 @type String
 @static
@@ -574,88 +664,15 @@ use to join/split outputline
 WMIResult.LINESEP = "###SEP###";
 
 /**
-WMI error class.
-@class WMIError
-@constructor
-@param err {String} wmic failed command line output 
-@param query {Query} query object that has produced output
+output to array of line
+@method splitOutput
+@static
+@private
 */
-var WMIError = function(err, query) {
-    var format = query.format || 'JSON';
-    this.err = err;
-    this.parser = null;
-    //finding parser
-    this.findParserFor(query);
-};
-
-/**
-Returns parsed data
-@method data
-@return {Object|String} result of the parsing
-*/
-WMIError.prototype.data = function() {
-    return this.parser(this.err);
-};
-
-/**
-Find best parser for query
-@method findParserForReturns 
-@param {Query} query
-@return {Function} parser method
-*/
-WMIError.prototype.findParserFor = function (query) {
-    if (typeof query.parser == 'string' && typeof this[query.parser] == 'function') {
-        this.parser = this[query.parser];
-    } else if (typeof query.parser == 'function') {
-        this.parser = query.parser;
-    } else if (query.format == 'JSON') {
-        this.parser = this.toJSON;
-    } else {
-        this.parser = this.raw;
-    }
-};
-
-/**
-command err to JSON parser
-@method toJSON
-@param {String} output
-@return {Object} result of parsing
-*/
-WMIError.prototype.toJSON = function (err) {
-    var temp = cmdResultToArray(err.message),
-        cleaned = [],
-        i;
-    //cleaning a few things
-    for (i=0;i<temp.length; i++) {
-        if (temp[i] && temp[i].indexOf('Command failed')!==-1) {
-            cleaned.push(temp[i]);
-        }
-    }
-    return {
-        message : cleaned.join("\r\n"),
-        code : err.code
-    };
-};
-
-
-/**
-get raw result
-@method raw
-@param {String} output
-@return {String} cmd result, can have multiple content format. See Query.SUPPORTED_FORMATS
-*/
-WMIError.prototype.raw = function(err) {
-    return err.message;
-};
-
-
-/** helpers **/
-function cmdResultToArray(output) {
+WMIResult.splitOutput = function(output) {
     //splitting output, 4 empty lines means new items
     return output.replace(/(\r?\n|\r){4,}/g, "£"+WMIResult.LINESEP+"£").replace(/(\r?\n|\r)+/g, "£").split("£");
-}
-
-
+};
 
 module.exports = Query;
 

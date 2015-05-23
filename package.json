@@ -1,18 +1,10 @@
 {
   "name": "wmi-query",
   "version": "0.1.0",
-  "description": "wmi query for nodejs",
-  "homepage": "TODO",
+  "description": "Grunt project of wmi-query npm module",
   "author": {
     "name": "Matthieu Bourgeois",
     "email": "matthieu.bourgeois@gmail.com"
-  },
-  "repository": {
-    "type": "git",
-    "url": "not set"
-  },
-  "bugs": {
-    "url": "http://10.2.30.5:8080/gitblit/summary/~mbo!ITE_Toolkit"
   },
   "licenses": [
     {
@@ -25,14 +17,16 @@
   },
   "devDependencies": {
     "grunt": ">0.4.1",
+    "grunt-contrib-clean": "^0.6.0",
     "grunt-contrib-concat": ">0.1.3",
     "grunt-contrib-copy": ">0.4.1",
     "grunt-contrib-jshint": ">0.4.1",
     "grunt-contrib-nodeunit": ">0.1.2",
     "grunt-contrib-yuidoc": ">0.4.0",
-    "grunt-markdown": ">0.4.0"
+    "grunt-markdown": ">0.4.0",
+    "grunt-publish": "0.0.5"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "grunt test"
   }
 }

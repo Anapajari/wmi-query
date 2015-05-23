@@ -4,23 +4,18 @@ module.exports = function(grunt) {
     // Project configuration.
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
-        meta: {
-            banner: '/*! <%= pkg.name %> - <%= pkg.version %> - ' +
-                '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
-                '* build with grunt (gruntjs.com)\n' 
-        },
         jshint: {
-            src : [ 'src/lib/wmi.js']
+            src : [ 'src/wmi-query.js']
         }, 
         nodeunit: {
-            files: ['tests/test.js']
+            all: ['src/test/*.js']
         }, 
         markdown: {
             all: {
                 files: [{
                     expand: false,
                     src: 'src/readme.md',
-                    dest: './Docs/notes.html'
+                    dest: './docs/notes.html'
                 }]
             }
         },
@@ -31,18 +26,38 @@ module.exports = function(grunt) {
                 version: '<%= pkg.version %>',
                 url: '<%= pkg.homepage %>',
                 options: {
-                    exclude : "/tests/",
                     paths : "src/",
-                    outdir: "Docs/" 
+                    exclude : "src/test/",
+                    outdir: "docs/" 
                 }
             }
         },
+        clean: {
+            dist: ["dist/**"],
+            docs: ["docs/**"]
+        },
         copy: {
             src : {
-                expand:true,
-                dest : 'dist',
-                src : 'src/**/*.js'
+                cwd: 'src', 
+                src : '**/*.js',
+                dest : 'dist/wmi-query',
+                expand:true
             },
+            'package.json' : {
+                src: 'src/package.json',
+                dest: 'dist/wmi-query/package.json',
+                options: {
+                    process: function(content, path) {
+                        return grunt.template.process(content);
+                    }
+                }
+            }
+            
+        },
+        publish : {
+            main : {
+                src : [ 'dist/wmi-query']
+            }
         }
 
     });
@@ -50,16 +65,19 @@ module.exports = function(grunt) {
     // Default task.
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-markdown');
+    grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-nodeunit');
     grunt.loadNpmTasks('grunt-contrib-yuidoc');
     grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-publish');
 
     /** TASKS **/
     grunt.registerTask('check', 'jshint');
     grunt.registerTask('test', 'nodeunit');
-    grunt.registerTask('docs', 'yuidoc');
-    grunt.registerTask('publish', 'copy:src');
-    grunt.registerTask('default', [ 'check',  'test', 'docs', 'publish']);
-
+    grunt.registerTask('docs', ['clean:docs', 'yuidoc']);
+    grunt.registerTask('copy-src', ['clean:dist', 'copy:src', 'copy:package.json']);
+    grunt.registerTask('build', [ 'check',  'test', 'docs', 'copy-src']);
+    grunt.registerTask('npm-publish', [ 'build', 'publish:main']);
+    grunt.registerTask('default', ['build']);
 
 };
