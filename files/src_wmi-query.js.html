@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>src\wmi-query.js - wmi-query-0.1.0</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+                <h1><img src="../assets/css/logo.png" title="wmi-query-0.1.0" width="117" height="52"></h1>
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.1.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/Query.html">Query</a></li>
+                                <li><a href="../classes/WMIResult.html">WMIResult</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                                <li><a href="../modules/wmi-query.html">wmi-query</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1 class="file-heading">File: src\wmi-query.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/* wmi-query
+ (C) 2015 Matthieu Bourgeois
+ MIT LICENCE
+#######  TODO
+  TODO1 : build npm package 
+          https://quickleft.com/blog/creating-and-publishing-a-node-js-module/
+          https://github.com/Jam3/jam3-lesson-module-creation
+  TODO3 : test support of specific xsl 
+  TODO3 : add missing switch especially output to file
+          see https://technet.microsoft.com/en-us/library/cc787035%28v=ws.10%29.aspx
+*/
+
+var util = require(&#x27;util&#x27;),
+    cp_exec = require(&#x27;child_process&#x27;).exec;
+
+/**
+@module wmi-query
+@description Easy WMI query. Warning this uses wmic so it must be run on a windows system.
+@example
+    //requiring module
+    var wmi = require(&quot;wmi-query&quot;);
+    //log os of localhost
+    wmi.get({node : &#x27;localhost&#x27;, format:&#x27;JSON&#x27; , alias:&#x27;os&#x27;, field:&#x27;Name&#x27;}, function(r) {
+        console.log(&#x27;OS is&#x27;, r.data[0].Name);
+    });
+    //list of available alias on remote server
+    wmi.listAlias({node : &#x27;remote_computer&#x27;, format:&#x27;JSON&#x27; }, function(r) {
+        for(var i=0; i&lt;r.data.length; i++) {
+            console.log(r.data[i].alias);
+        }
+    });
+    //start a service named demo on remote computer
+    wmi.call({node:&quot;remote_computer&quot;, alias:&#x27;service&#x27;, where: &#x27;Name=&quot;example&quot;&#x27;, action:&#x27;startservice&#x27;, format:&#x27;JSON&#x27;}, function(r) {
+        if (r.err) {
+            console.log(&quot;Start service failed with message:&quot;, r.err);
+        } else {
+            console.log(&quot;Command has returned
+        }
+    });
+
+*/
+
+/**
+Query is the main entity of this module..
+&lt;br&gt;Usefull links :
+&lt;br&gt; &lt;a href=&quot;http://blogs.technet.com/b/askperf/archive/2012/02/17/useful-wmic-queries.aspx&quot;&gt; query examples&lt;/a&gt; and 
+    &lt;a href=&quot;https://social.technet.microsoft.com/Forums/windowsserver/en-US/30273791-1952-4315-a5c3-7d809f9724c1/can-you-connect-to-wmi-remotely-using-a-local-user-account?forum=winserverManagement&quot;&gt;commons problems with wmi&lt;/a&gt;
+
+@class Query
+@constructor
+@param options {Object} The object whose properties will be used to init the query
+@param [options.timeout=5000] {Number} time out for query execution
+@param [options.node] {String|array} node(s) to query, can contains multiples server name separated by comma: &quot;pc1,pc2&quot; or array of node
+@param [options.user] {String} A user name to be used by WMIC when accessing the /NODE computers 
+                      or computers specified in aliases.
+@param [options.password] A password to be used by WMIC when accessing the /NODE computers 
+                          (possibly including the local computer)
+
+@param [options.verb] {String} verb of the query, must be in Query.SUPPORTED_VERBS
+@param [options.alias] {String} alias being queried
+@param [options.where] {String|Array} where clause, query will add parenthesis around it
+@param [options.field] {String|Array} field being queried, used mainly by &quot;get&quot; verb
+@param [options.action] {String} action being executed, use mainly by &quot;call&quot; verb
+@param [options.format=&#x27;JSON&#x27;] {String} query output, must be in Query.SUPPORTED_FORMATS or be a valid path to a XSL file (in this case the output will default to raw).
+@param [options.cmd] {String} manual command, will override mosts others options
+@param [options.parser] {String|Function} Function that will be used to parse cmd output
+@param [options.help=false] {Boolean} flag used when the cmd executed needs the &quot;/?&quot; option
+@example
+    //requiring module
+    var wq = require(&quot;wmi-query&quot;);
+    //implements of query describe in first link
+    //using static get method
+    wq.get({&quot;alias&quot;:&quot;baseboard&quot;, &quot;field&quot;:&quot;Manufacturer, Model, Name, PartNumber, slotlayout, serialnumber, poweredon&quot;}, function(r) {
+        //...
+    });
+    //manual execution and field as array
+    var myQuery = new wq({&quot;alias&quot;:&quot;bios&quot;, &quot;verb&quot;:&quot;get&quot;, &quot;field&quot;: [&quot;name&quot;, &quot;version&quot;, &quot;serialnumber&quot;]})
+    myQuery.exec(function(r) { 
+        // ... 
+    });
+    //execution of manual query
+    var myQuery = new ws({&quot;cmd&quot;:&quot;cdrom get Name, drive, Volumename&quot;});
+    myQuery.exec(function(r) { 
+       // ... 
+    });
+    //static get with where clause
+    wq.get({
+            &quot;alias&quot;:&quot;datafile&quot;, 
+            &quot;verb&quot;:&quot;get&quot;, 
+            &quot;field&quot;:&quot;Archive, FileSize, FileType, InstallDate, Readable, Writeable, System, Version&quot;
+            &quot;where&quot;:&quot;name=&#x27;c:\\boot.ini&#x27;&quot;
+        }, function(r) {
+        //...
+     });
+*/
+var Query = function(options) {
+    this.timeout = 5000;
+    this._node = null;
+    this._user = null;
+    this._password = null;
+    this._verb = null;
+    this._alias = null;
+    this._where = null;
+    this._field = null;
+    this._action = null;
+    this._format = null;
+    this._cmd = null;
+    this._parser = null;
+    this._help = false;
+    if (options &amp;&amp; typeof options == &#x27;object&#x27;) {
+        if (options.timeout) 
+            this.timeout = options.timeout;
+        if (options.verb) 
+            this.verb = options.verb;
+        if (options.help) 
+            this._help = options.help;
+        if (options.node) 
+            this.node = options.node;
+        if (options.user &amp;&amp; options.password) { 
+            //both needed, otherwise skipping
+            this.user = options.user;
+            this.password = options.password;
+        }
+        if (options.alias) 
+            this._alias = options.alias;
+        if (options.where) 
+            this.where = options.where;
+        if (options.field) 
+            this.field = options.field;
+        if (options.action) 
+            this._action = options.action;
+        if (options.format) 
+            this.format = options.format;
+        if (options.cmd) 
+            this.cmd = options.cmd;
+        if (options.parser) 
+            this.parser = options.parser;
+    }
+};
+//warning when using multiples node
+//we can&#x27;t tell which line belong to which one
+Object.defineProperties(Query.prototype, {
+    /**
+    @property node
+    @type String
+    */
+    node : {
+        set : function (n) {
+            if (util.isArray(n)) {
+                this._node = n.join(&#x27;,&#x27;);
+            } else if (typeof n == &#x27;string&#x27;) {
+                this._node = n;
+            }
+        },
+        get : function (){
+            return this._node;
+        }
+    },
+    /**
+    @property user
+    @type String
+    */
+    user : {
+        set : function (u) {
+            if (typeof u == &#x27;string&#x27;) {
+                this._user = u;
+            }
+        },
+        get : function (){
+            return this._user;
+        }
+    },
+    /**
+    @property password
+    @type String
+    */
+    password : {
+        set : function (p) {
+            if (typeof p == &#x27;string&#x27;) {
+                this._password = p;
+            }
+        },
+        get : function (){
+            return this._password;
+        }
+    },
+    /**
+    @property where
+    @type String
+    */
+    where : {
+        set : function (w) {
+            if (util.isArray(w)) {
+                //todo handle &quot;and/or&quot;, for the moment only supporting &quot;and&quot;
+                this._where = w.join(&#x27; and &#x27;);
+            } else if (typeof w == &#x27;string&#x27;) {
+                this._where = w;
+            } else {
+                this._where = null;
+            }
+        },
+        get : function() {
+            return this._where;
+        }
+    },
+    /**
+    @property field
+    @type String
+    */
+    field :{ 
+        set : function (f) {
+            if (util.isArray(f)) {
+                this._field = f.join(&#x27;,&#x27;);
+            } else if (typeof f == &#x27;string&#x27;) {
+                this._field = f;
+            } else {
+                this._field = null;
+            }
+        },
+        get : function () {
+            return this._field;
+        }
+    },
+    /**
+    @property format
+    @type String
+    */
+    format: {
+        set : function(f) {
+            if (Query.SUPPORTED_FORMATS.indexOf(f) != -1) {
+                this._format = f;
+            } else if (fs.lstatSync(f).isFile()) {
+                //shoud check for extension and file readable also
+                this.specificXSL = f;
+                this._format = &#x27;RAW&#x27;;
+            } else {
+                this._format = &#x27;JSON&#x27;;
+            }
+        },
+        get : function() {
+            return this._format;
+        }
+    },
+    /**
+    @property cmd
+    @type String
+    */
+    cmd : {
+        set : function(c) {
+            if (c.indexOf(&#x27;wmic&#x27;)===-1) {
+                //forcing cmd to start with wmic
+                c = &#x27;wmic &#x27;+c;
+            }
+            //we&#x27;ll also replace &amp; and | operator to prevent multiple dos command
+            c = c.replace(/[\&amp;\|]/g, &#x27;&#x27;);
+
+            this._cmd = c;
+            //finding verb
+            if (!this.verb) {
+                if (c.indexOf(&#x27;get&#x27;) &gt;= 0 &amp;&amp; this.verb != &#x27;get&#x27;) this.verb = &#x27;get&#x27;;
+                if (c.indexOf(&#x27;call&#x27;) &gt;=0 &amp;&amp; this.verb != &#x27;call&#x27;) this.verb = &#x27;call&#x27;;
+                if (c.indexOf(&#x27;create&#x27;)&gt;=0 &amp;&amp; this.verb != &#x27;create&#x27;) this.verb = &#x27;create&#x27;;
+                if (c.indexOf(&#x27;delete&#x27;)&gt;=0 &amp;&amp; this.verb != &#x27;delete&#x27;) this.verb = &#x27;delete&#x27;;
+                if (c.indexOf(&#x27;set&#x27;)&gt;=0 &amp;&amp; this.verb != &#x27;set&#x27;) this.verb = &#x27;set&#x27;;
+                if (c.indexOf(&#x27;\/?&#x27;)&gt;=0 &amp;&amp; !this._help) this._help = true;
+            }
+        },
+        get : function() {
+            return this._cmd;
+        }
+    },
+    /**
+    @property verb
+    @type String
+    */
+    verb : {
+        set : function(v) {
+            if (Query.SUPPORTED_VERBS.indexOf(v) != -1) {
+                this._verb = v;
+            }
+        },
+        get : function() {
+            return this._verb;
+        }
+    },
+    /**
+    @property parser
+    @type String|Function
+    */
+    parser : {
+        set: function(p){
+            if (typeof p==&#x27;string&#x27; || typeof p==&#x27;function&#x27;) {
+                this._parser = p;
+            }
+        },
+        get: function () {
+            return this._parser;
+        }
+    }
+});
+
+/**
+use object properties to build command
+@method buildCmd
+@chainable
+*/
+Query.prototype.buildCmd = function() {
+    var cmd;
+    if (!this.cmd) {
+        cmd = &#x27;wmic &#x27;;
+        if (this._node) {
+            cmd += &#x27; /node:&#x27;+this._node;
+        }
+        if(this._node &amp;&amp; this._password) {
+            cmd += &#x27; /user:&#x27;+this._user;
+            cmd += &#x27; /password:&#x27;+this._password;
+        }
+        if (this._alias) {
+            cmd += &#x27; &#x27;+this._alias;
+        }
+        if (this._where) {
+            cmd += &#x27; where (&#x27;+this._where+&#x27;)&#x27;;
+        }
+        if (this.verb == &#x27;NO_VERB&#x27;) {
+            //do nothing
+        } else if (this.verb == &#x27;get&#x27;) {
+            cmd += &#x27; get &#x27;;
+            if (this._field) {
+                cmd += &#x27; &#x27;+this._field;
+            }
+        } else if (this.verb == &#x27;call&#x27;) {
+            cmd += &#x27; call &#x27;;
+            if (this._action) {
+                cmd += this._action+&quot; &quot;;
+            }
+        }
+    }
+    this.cmd = cmd;
+    this.appendFormat();
+    return this;
+};
+
+/**
+check command format according to format property
+@method checkCmd
+@private
+*/
+Query.prototype.checkCmd = function() {
+    if (this.format) {
+        if (this.cmd.indexOf(&#x27;/format&#x27;)!=-1) {
+            this.cmd = this.cmd.replace(/\/format.*$/, &#x27;&#x27;);
+        }
+        this.appendFormat();
+    }
+};
+
+/**
+append format instruction to cmd.
+Weird usage of WINDIR path is explained &lt;a href=&quot;http://stackoverflow.com/questions/9673057/wmic-error-invalid-xsl-format-in-windows7&quot;&gt;here&lt;/a&gt;
+@method appendFormat
+@private
+*/
+Query.prototype.appendFormat = function() {
+    if (this._help) {
+        this._cmd += &#x27; /?&#x27;;
+    } else if (this.verb == &#x27;call&#x27;) {
+        //removing format if found
+        this._cmd = this._cmd.replace(/\/format(.*?)( |$)/, &quot;&quot;);
+    } else if (this.verb == &#x27;get&#x27;) {
+        //special format are supported only by get method
+        if(this._format == &#x27;JSON&#x27;) {
+            /* some might think it would have been easier to parse csv than format:list
+             * and I tried it at first... But after some tests on a few servers
+             * I&#x27;ve found out that some services description/caption contain comma.
+             * And thus the split(&quot;,&quot;) on the output was shifting columns result
+             */
+            this._cmd += &#x27; /format:list&#x27;;
+        } else if (this._format == &#x27;HFORM&#x27;){
+            this._cmd += &#x27; /format:&quot;%WINDIR%\\System32\\wbem\\en-us\\hform&quot;&#x27;;
+        } else if (this._format == &#x27;HTABLE&#x27;){
+            this._cmd += &#x27; /format:&quot;%WINDIR%\\System32\\wbem\\en-us\\htable&quot;&#x27;;
+        } else if (this._format == &#x27;XML&#x27;){
+            this._cmd += &#x27; /format:&quot;%WINDIR%\\System32\\wbem\\en-us\\xml&quot;&#x27;;
+        } else if (this._format == &#x27;CSV&#x27;){
+            this._cmd += &#x27; /format:&quot;%WINDIR%\\System32\\wbem\\en-us\\csv&quot;&#x27;;
+        } else if (this.specificXSL) {
+            //valid file path has been check in format setter
+            this._cmd += &#x27;/format:&quot;&#x27;+this.specificXSL+&#x27;&quot;&#x27;;
+        }
+    }
+};
+
+/**
+exec command and fire callback.
+Params of the callback is an object with a cmd key containing de wmic command and either
+a data key containing parsed success output if no error occured
+an err key containing parsed error output if an error occured
+@method exec
+@param [callback] callback to be executed once the command result has been parsed
+@async
+*/
+Query.prototype.exec = function(callback) {
+    //callback&#x27;s optionnal so if not set giving it an empty function
+    if (!callback) callback = function() {return;};
+    if (!this.cmd) {
+        this.buildCmd();
+    } else {
+        this.checkCmd();
+    }
+    if (Query.SUPPORTED_VERBS.indexOf(this._verb) == -1) {
+        callback({err: &quot;Unsupported &quot;+this.verb, stderr:&quot;&quot;});
+        return;
+    }
+    var q = this; //stored to be available in callback
+    cp_exec(this.cmd,{&quot;encoding&quot;:&quot;utf8&quot;, &quot;timeout&quot;: this.timeout}, function(err, stdout, stderr) {
+        var error,
+            result,
+            output = {err: err, stdout: stdout, stderr: stderr};
+        result = new WMIResult(output, q);
+        callback({cmd:q.cmd, err:result.error(), data:result.data()});
+    });
+};
+/**
+List of the implemented verbs
+@property SUPPORTED_VERBS
+@static
+@private
+@final
+*/
+Query.SUPPORTED_VERBS = [&#x27;get&#x27;, &#x27;call&#x27;, &#x27;NO_VERB&#x27;];
+/**
+List of the supported output format
+@property SUPPORTED_FORMATS
+@static
+@private
+@final
+*/
+Query.SUPPORTED_FORMATS = [&#x27;XML&#x27;, &#x27;CSV&#x27;, &#x27;HFORM&#x27;, &#x27;HTABLE&#x27;, &#x27;JSON&#x27;, &#x27;RAW&#x27;];
+
+/**
+list all available alias.
+Note : options param accept the same keys than Query constructor but some of them will be over-ride 
+to produce expected result.
+@method listAlias
+@static
+@param options query options, see Query constructor
+@param [callback] callback to be executed once the command result has been parsed
+@async
+@example
+    //get alias list and log their name
+    wmi.listAlias({node : &#x27;localhost&#x27;}, function(r) {
+        for(var i=0; i&lt;r.data.length; i++) {
+            console.log(r.data[i].alias, &#x27;-&#x27;, r.data[i].caption);
+        }
+    });
+**/
+Query.listAlias  = function (options, callback) {
+    //setting expected and cleaning unexpected options 
+    options.verb = &quot;NO_VERB&quot;;
+    options.help = true;
+    options.parser = &quot;getHelpToJSON&quot;;
+    delete options.alias;
+    delete options.where;
+    new Query(options).exec(callback);
+};
+
+/**
+build and exec get query 
+@method get
+@static
+@param options query options, see Query constructor
+@param [callback] callback to be executed once the command result has been parsed
+@async
+@example
+    //get os name of localhost, log the result
+    wmi.get({node : &#x27;localhost&#x27;, format:&#x27;JSON&#x27; , alias:&#x27;os&#x27;, field:&#x27;Name&#x27;}, function(r) {
+        console.log(&quot;OS is :&quot;, r.data[0].Name);
+    });
+    //get all stopped service on host
+    wmi.get({node:&#x27;host&#x27;, alias:&#x27;service&#x27;, where: &#x27;Started=FALSE&#x27;, format:&#x27;JSON&#x27;}, function(r) {
+        //...
+    });
+**/
+Query.get = function(options, callback) {
+    options.verb = &#x27;get&#x27;;
+    new Query(options).buildCmd().exec(callback);
+};
+
+/**
+build and exec call query 
+@method call
+@static
+@param options query options, see {{#crossLink &quot;Query&quot;}}
+@param [callback] callback to be executed once the command result has been parsed
+@async
+@example
+    //start tomcat7 service and log the command&#x27;s returned value
+    wmi.call({node:&#x27;host&#x27;, alias:&#x27;service&#x27;, where: &#x27;Name=&quot;Tomcat7&quot;&#x27;, action:&#x27;startservice&#x27;, format:&#x27;JSON&#x27;}, function(r) {
+        console.log(&quot;Command &quot;+r.cmd+&quot; has returned &quot;+r.data.returnValue);
+    });
+**/ 
+Query.call = function(options, callback) {
+    options.verb = &#x27;call&#x27;;
+    new Query(options).exec(callback);
+};
+
+  /*-------------Result class --------------- */
+
+/**
+WMI result class.
+@class WMIResult
+@constructor
+@param output {Object} object containing cmd output
+@param [output.err] {String} err output if an error occured
+@param [output.stdout] {String} output if command succeed
+@param query {Query} query object that has produced output
+*/
+var WMIResult = function(output, query) {
+    var format = query.format || &#x27;JSON&#x27;,
+        verb = query.verb || &#x27;get&#x27;;
+    this.parser = null;
+    this.err = output.err;
+    this.output = output.stdout;
+    //finding parser
+    this.findParserFor(query);
+};
+
+/**
+Returns parsed data
+@method data
+@return {Object|String} result of the parsing
+*/
+WMIResult.prototype.data = function() {
+    if (this.err) {
+        return null;
+    } else {
+        return this.parser(this.output);
+    }
+};
+
+/**
+Returns parsed error
+@method error
+@return {Object|String} result of the parsing
+*/
+WMIResult.prototype.error = function() {
+    if (this.err) {
+        return this.errorToJSON(this.err);
+    } else {
+        return null;
+    }
+};
+
+/**
+Find best parser for query
+@method findParserFor
+@param {Query} query
+@return {Function} parser method
+*/
+WMIResult.prototype.findParserFor= function (query) {
+    if (typeof query.parser == &#x27;string&#x27; &amp;&amp; typeof this[query.parser] == &#x27;function&#x27;) {
+        this.parser = this[query.parser];
+    } else if (typeof query.parser == &#x27;function&#x27;) {
+        this.parser = query.parser;
+    } else if (query.verb == &#x27;get&#x27; &amp;&amp; query.format == &#x27;JSON&#x27;) {
+        this.parser = this.getToJSON;
+    } else if (query.verb == &#x27;call&#x27; &amp;&amp; query.format == &#x27;JSON&#x27;) {
+        this.parser = this.callToJSON;
+    } else {
+        this.parser = this.raw;
+    }
+};
+
+/**
+command err to JSON parser
+@method errorToJSON
+@param {String} output
+@return {Object} result of parsing
+*/
+WMIResult.prototype.errorToJSON = function (err) {
+    var temp = WMIResult.splitOutput(err.message),
+        cleaned = [],
+        i;
+    //cleaning a few things
+    for (i=0;i&lt;temp.length; i++) {
+        if (temp[i] &amp;&amp; temp[i].indexOf(&#x27;Command failed&#x27;)!==-1) {
+            cleaned.push(temp[i]);
+        }
+    }
+    return {
+        message : cleaned.join(&quot;\r\n&quot;),
+        code : err.code
+    };
+};
+ 
+/**
+JSON parser for &quot;get&quot; command output 
+@method getToJSON
+@param {String} output
+@return {Object} result of parsing
+*/
+WMIResult.prototype.getToJSON = function (output) {
+    var temp = WMIResult.splitOutput(output),
+        separator, 
+        i, 
+        found,
+        result = [],
+        r={},
+        emptyR = true;
+    for(i=0;i&lt;temp.length; i++) {
+        if (temp[i]== WMIResult.LINESEP) {
+            if (!emptyR) {
+                result.push(r);
+                r = {};
+                emptyR = true;
+            }
+        }
+        found = temp[i].match(/^(.*?)=(.*?)$/);
+        if (found &amp;&amp; found.length == 3) {
+            r[found[1]] = found[2];
+            emptyR = false;
+        }
+    }
+    //adding last item
+    if (!emptyR) result.push(r);
+    return result;
+};
+
+/*
+JSON parser for &quot;call&quot; command output 
+@method callToJSON
+@param {String} output
+@return {Object} result of parsing
+*/
+WMIResult.prototype.callToJSON = function(output) {
+    var temp = WMIResult.splitOutput(output),
+        returnValue = null,
+        i, 
+        m;
+    for(i=0; i&lt;temp.length; i++) {
+        if (temp[i].indexOf(&quot;ReturnValue&quot;) &gt;= 0) {
+            m = temp[i].match(/= +(\d+)/);
+            if (m &amp;&amp; m.length == 2) {
+                returnValue = m[1];
+            }
+            break;
+        }
+    }
+    return { returnValue : returnValue};
+
+};
+
+/**
+JSON parser for &quot;help&quot; command output
+@method getHelpToJSON
+@param {String} output
+@return {Object} result of parsing
+*/
+WMIResult.prototype.getHelpToJSON  = function (output) {
+    //warning FIRST_ALIAS and LAST_ALIAS might change depending on system
+    var FIRST_ALIAS = &#x27;ALIAS&#x27;,
+        LAST_ALIAS = &#x27;WMISET&#x27;,
+        temp = WMIResult.splitOutput(output),
+        i, 
+        content,
+        foundStart= false,
+        list = [];
+    for(i=0;i&lt;temp.length; i++) {
+        if (temp[i]== WMIResult.LINESEP) {
+            continue;
+        }
+        if (temp[i].indexOf(FIRST_ALIAS) === 0) {
+            foundStart = true;
+        }
+        if (foundStart) {
+            //line should look like: &quot;SHARE  - Shared resource management.&quot;
+            content = temp[i].match(/([A-Z]*)\s*\-\s*(.*)$/);
+            if (content &amp;&amp; content.length == 3) {
+                list.push({alias:content[1], caption:content[2]});
+            }
+            if (temp[i].indexOf(LAST_ALIAS)=== 0) {
+                // found ending line
+                break;
+            }
+        }
+    }
+    return list;
+};
+
+/**
+get raw result
+@method raw
+@param {Object} output
+@return {Object} cmd result, can have multiple content format. See Query.SUPPORTED_FORMATS
+*/
+WMIResult.prototype.raw = function(output) {
+    return output;
+};
+
+/**
+use to join/split output lines
+@property LINESEP
+@type String
+@static
+@private
+@final
+*/
+WMIResult.LINESEP = &quot;###SEP###&quot;;
+
+/**
+output to array of line
+@method splitOutput
+@static
+@private
+*/
+WMIResult.splitOutput = function(output) {
+    //splitting output, 4 empty lines means new items
+    return output.replace(/(\r?\n|\r){4,}/g, &quot;£&quot;+WMIResult.LINESEP+&quot;£&quot;).replace(/(\r?\n|\r)+/g, &quot;£&quot;).split(&quot;£&quot;);
+};
+
+module.exports = Query;
+
+
+
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

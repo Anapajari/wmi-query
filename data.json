@@ -1,0 +1,625 @@
+{
+    "project": {
+        "name": "wmi-query-0.1.0",
+        "description": "Grunt project of wmi-query npm module",
+        "version": "0.1.0",
+        "url": ""
+    },
+    "files": {
+        "src\\test\\wmi-query.js": {
+            "name": "src\\test\\wmi-query.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "src\\wmi-query.js": {
+            "name": "src\\wmi-query.js",
+            "modules": {
+                "wmi-query": 1
+            },
+            "classes": {
+                "Query": 1,
+                "WMIResult": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        }
+    },
+    "modules": {
+        "wmi-query": {
+            "name": "wmi-query",
+            "submodules": {},
+            "classes": {
+                "Query": 1,
+                "WMIResult": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "src\\wmi-query.js",
+            "line": 509,
+            "example": [
+                "\n    //requiring module\n    var wmi = require(\"wmi-query\");\n    //log os of localhost\n    wmi.get({node : 'localhost', format:'JSON' , alias:'os', field:'Name'}, function(r) {\n        console.log('OS is', r.data[0].Name);\n    });\n    //list of available alias on remote server\n    wmi.listAlias({node : 'remote_computer', format:'JSON' }, function(r) {\n        for(var i=0; i<r.data.length; i++) {\n            console.log(r.data[i].alias);\n        }\n    });\n    //start a service named demo on remote computer\n    wmi.call({node:\"remote_computer\", alias:'service', where: 'Name=\"example\"', action:'startservice', format:'JSON'}, function(r) {\n        if (r.err) {\n            console.log(\"Start service failed with message:\", r.err);\n        } else {\n            console.log(\"Command has returned\n        }\n    });\n"
+            ]
+        }
+    },
+    "classes": {
+        "Query": {
+            "name": "Query",
+            "shortname": "Query",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "wmi-query",
+            "namespace": "",
+            "file": "src\\wmi-query.js",
+            "line": 43,
+            "description": "Query is the main entity of this module..\n<br>Usefull links :\n<br> <a href=\"http://blogs.technet.com/b/askperf/archive/2012/02/17/useful-wmic-queries.aspx\"> query examples</a> and \n    <a href=\"https://social.technet.microsoft.com/Forums/windowsserver/en-US/30273791-1952-4315-a5c3-7d809f9724c1/can-you-connect-to-wmi-remotely-using-a-local-user-account?forum=winserverManagement\">commons problems with wmi</a>",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "options",
+                    "description": "The object whose properties will be used to init the query",
+                    "type": "Object",
+                    "props": [
+                        {
+                            "name": "timeout",
+                            "description": "time out for query execution",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "5000"
+                        },
+                        {
+                            "name": "node",
+                            "description": "node(s) to query, can contains multiples server name separated by comma: \"pc1,pc2\" or array of node",
+                            "type": "String|array",
+                            "optional": true
+                        },
+                        {
+                            "name": "user",
+                            "description": "A user name to be used by WMIC when accessing the /NODE computers \n                      or computers specified in aliases.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "password",
+                            "description": "A password to be used by WMIC when accessing the /NODE computers \n                          (possibly including the local computer)",
+                            "optional": true
+                        },
+                        {
+                            "name": "verb",
+                            "description": "verb of the query, must be in Query.SUPPORTED_VERBS",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "alias",
+                            "description": "alias being queried",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "where",
+                            "description": "where clause, query will add parenthesis around it",
+                            "type": "String|Array",
+                            "optional": true
+                        },
+                        {
+                            "name": "field",
+                            "description": "field being queried, used mainly by \"get\" verb",
+                            "type": "String|Array",
+                            "optional": true
+                        },
+                        {
+                            "name": "action",
+                            "description": "action being executed, use mainly by \"call\" verb",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "format",
+                            "description": "query output, must be in Query.SUPPORTED_FORMATS or be a valid path to a XSL file (in this case the output will default to raw).",
+                            "type": "String",
+                            "optional": true,
+                            "optdefault": "'JSON'"
+                        },
+                        {
+                            "name": "cmd",
+                            "description": "manual command, will override mosts others options",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "parser",
+                            "description": "Function that will be used to parse cmd output",
+                            "type": "String|Function",
+                            "optional": true
+                        },
+                        {
+                            "name": "help",
+                            "description": "flag used when the cmd executed needs the \"/?\" option",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
+                        }
+                    ]
+                }
+            ],
+            "example": [
+                "\n    //requiring module\n    var wq = require(\"wmi-query\");\n    //implements of query describe in first link\n    //using static get method\n    wq.get({\"alias\":\"baseboard\", \"field\":\"Manufacturer, Model, Name, PartNumber, slotlayout, serialnumber, poweredon\"}, function(r) {\n        //...\n    });\n    //manual execution and field as array\n    var myQuery = new wq({\"alias\":\"bios\", \"verb\":\"get\", \"field\": [\"name\", \"version\", \"serialnumber\"]})\n    myQuery.exec(function(r) { \n        // ... \n    });\n    //execution of manual query\n    var myQuery = new ws({\"cmd\":\"cdrom get Name, drive, Volumename\"});\n    myQuery.exec(function(r) { \n       // ... \n    });\n    //static get with where clause\n    wq.get({\n            \"alias\":\"datafile\", \n            \"verb\":\"get\", \n            \"field\":\"Archive, FileSize, FileType, InstallDate, Readable, Writeable, System, Version\"\n            \"where\":\"name='c:\\\\boot.ini'\"\n        }, function(r) {\n        //...\n     });"
+            ]
+        },
+        "WMIResult": {
+            "name": "WMIResult",
+            "shortname": "WMIResult",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "wmi-query",
+            "namespace": "",
+            "file": "src\\wmi-query.js",
+            "line": 509,
+            "description": "WMI result class.",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "output",
+                    "description": "object containing cmd output",
+                    "type": "Object",
+                    "props": [
+                        {
+                            "name": "err",
+                            "description": "err output if an error occured",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "stdout",
+                            "description": "output if command succeed",
+                            "type": "String",
+                            "optional": true
+                        }
+                    ]
+                },
+                {
+                    "name": "query",
+                    "description": "query object that has produced output",
+                    "type": "Query"
+                }
+            ]
+        }
+    },
+    "classitems": [
+        {
+            "file": "src\\test\\wmi-query.js",
+            "line": 38,
+            "description": "checking simple error on unexisting alias",
+            "class": "Query"
+        },
+        {
+            "file": "src\\test\\wmi-query.js",
+            "line": 50,
+            "description": "checking error on misplaced switch",
+            "class": "Query"
+        },
+        {
+            "file": "src\\test\\wmi-query.js",
+            "line": 78,
+            "description": "check alias list",
+            "class": "Query"
+        },
+        {
+            "file": "src\\test\\wmi-query.js",
+            "line": 106,
+            "description": "call check, \nin order to work everywhere we'll get first service not started and try\nto start it, then stop it.\nexcept if tested_service has been set;",
+            "class": "Query"
+        },
+        {
+            "file": "src\\wmi-query.js",
+            "line": 143,
+            "itemtype": "property",
+            "name": "node",
+            "type": "String",
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\wmi-query.js",
+            "line": 159,
+            "itemtype": "property",
+            "name": "user",
+            "type": "String",
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\wmi-query.js",
+            "line": 173,
+            "itemtype": "property",
+            "name": "password",
+            "type": "String",
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\wmi-query.js",
+            "line": 187,
+            "itemtype": "property",
+            "name": "where",
+            "type": "String",
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\wmi-query.js",
+            "line": 206,
+            "itemtype": "property",
+            "name": "field",
+            "type": "String",
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\wmi-query.js",
+            "line": 224,
+            "itemtype": "property",
+            "name": "format",
+            "type": "String",
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\wmi-query.js",
+            "line": 244,
+            "itemtype": "property",
+            "name": "cmd",
+            "type": "String",
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\wmi-query.js",
+            "line": 272,
+            "itemtype": "property",
+            "name": "verb",
+            "type": "String",
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\wmi-query.js",
+            "line": 286,
+            "itemtype": "property",
+            "name": "parser",
+            "type": "String|Function",
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\wmi-query.js",
+            "line": 302,
+            "description": "use object properties to build command",
+            "itemtype": "method",
+            "name": "buildCmd",
+            "chainable": 1,
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\wmi-query.js",
+            "line": 343,
+            "description": "check command format according to format property",
+            "itemtype": "method",
+            "name": "checkCmd",
+            "access": "private",
+            "tagname": "",
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\wmi-query.js",
+            "line": 357,
+            "description": "append format instruction to cmd.\nWeird usage of WINDIR path is explained <a href=\"http://stackoverflow.com/questions/9673057/wmic-error-invalid-xsl-format-in-windows7\">here</a>",
+            "itemtype": "method",
+            "name": "appendFormat",
+            "access": "private",
+            "tagname": "",
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\wmi-query.js",
+            "line": 393,
+            "description": "exec command and fire callback.\nParams of the callback is an object with a cmd key containing de wmic command and either\na data key containing parsed success output if no error occured\nan err key containing parsed error output if an error occured",
+            "itemtype": "method",
+            "name": "exec",
+            "params": [
+                {
+                    "name": "callback",
+                    "description": "callback to be executed once the command result has been parsed",
+                    "optional": true
+                }
+            ],
+            "async": 1,
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\wmi-query.js",
+            "line": 423,
+            "description": "List of the implemented verbs",
+            "itemtype": "property",
+            "name": "SUPPORTED_VERBS",
+            "static": 1,
+            "access": "private",
+            "tagname": "",
+            "final": 1,
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\wmi-query.js",
+            "line": 431,
+            "description": "List of the supported output format",
+            "itemtype": "property",
+            "name": "SUPPORTED_FORMATS",
+            "static": 1,
+            "access": "private",
+            "tagname": "",
+            "final": 1,
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\wmi-query.js",
+            "line": 440,
+            "description": "list all available alias.\nNote : options param accept the same keys than Query constructor but some of them will be over-ride \nto produce expected result.",
+            "itemtype": "method",
+            "name": "listAlias",
+            "static": 1,
+            "params": [
+                {
+                    "name": "options",
+                    "description": "query options, see Query constructor"
+                },
+                {
+                    "name": "callback",
+                    "description": "callback to be executed once the command result has been parsed",
+                    "optional": true
+                }
+            ],
+            "async": 1,
+            "example": [
+                "\n    //get alias list and log their name\n    wmi.listAlias({node : 'localhost'}, function(r) {\n        for(var i=0; i<r.data.length; i++) {\n            console.log(r.data[i].alias, '-', r.data[i].caption);\n        }\n    });"
+            ],
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\wmi-query.js",
+            "line": 467,
+            "description": "build and exec get query",
+            "itemtype": "method",
+            "name": "get",
+            "static": 1,
+            "params": [
+                {
+                    "name": "options",
+                    "description": "query options, see Query constructor"
+                },
+                {
+                    "name": "callback",
+                    "description": "callback to be executed once the command result has been parsed",
+                    "optional": true
+                }
+            ],
+            "async": 1,
+            "example": [
+                "\n    //get os name of localhost, log the result\n    wmi.get({node : 'localhost', format:'JSON' , alias:'os', field:'Name'}, function(r) {\n        console.log(\"OS is :\", r.data[0].Name);\n    });\n    //get all stopped service on host\n    wmi.get({node:'host', alias:'service', where: 'Started=FALSE', format:'JSON'}, function(r) {\n        //...\n    });"
+            ],
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\wmi-query.js",
+            "line": 489,
+            "description": "build and exec call query",
+            "itemtype": "method",
+            "name": "call",
+            "static": 1,
+            "params": [
+                {
+                    "name": "options",
+                    "description": "query options, see }",
+                    "type": "#crossLink \"Query\""
+                },
+                {
+                    "name": "callback",
+                    "description": "callback to be executed once the command result has been parsed",
+                    "optional": true
+                }
+            ],
+            "async": 1,
+            "example": [
+                "\n    //start tomcat7 service and log the command's returned value\n    wmi.call({node:'host', alias:'service', where: 'Name=\"Tomcat7\"', action:'startservice', format:'JSON'}, function(r) {\n        console.log(\"Command \"+r.cmd+\" has returned \"+r.data.returnValue);\n    });"
+            ],
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\wmi-query.js",
+            "line": 528,
+            "description": "Returns parsed data",
+            "itemtype": "method",
+            "name": "data",
+            "return": {
+                "description": "result of the parsing",
+                "type": "Object|String"
+            },
+            "class": "WMIResult",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\wmi-query.js",
+            "line": 541,
+            "description": "Returns parsed error",
+            "itemtype": "method",
+            "name": "error",
+            "return": {
+                "description": "result of the parsing",
+                "type": "Object|String"
+            },
+            "class": "WMIResult",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\wmi-query.js",
+            "line": 554,
+            "description": "Find best parser for query",
+            "itemtype": "method",
+            "name": "findParserFor",
+            "params": [
+                {
+                    "name": "query",
+                    "description": "",
+                    "type": "Query"
+                }
+            ],
+            "return": {
+                "description": "parser method",
+                "type": "Function"
+            },
+            "class": "WMIResult",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\wmi-query.js",
+            "line": 574,
+            "description": "command err to JSON parser",
+            "itemtype": "method",
+            "name": "errorToJSON",
+            "params": [
+                {
+                    "name": "output",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "result of parsing",
+                "type": "Object"
+            },
+            "class": "WMIResult",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\wmi-query.js",
+            "line": 596,
+            "description": "JSON parser for \"get\" command output",
+            "itemtype": "method",
+            "name": "getToJSON",
+            "params": [
+                {
+                    "name": "output",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "result of parsing",
+                "type": "Object"
+            },
+            "class": "WMIResult",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\wmi-query.js",
+            "line": 653,
+            "description": "JSON parser for \"help\" command output",
+            "itemtype": "method",
+            "name": "getHelpToJSON",
+            "params": [
+                {
+                    "name": "output",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "result of parsing",
+                "type": "Object"
+            },
+            "class": "WMIResult",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\wmi-query.js",
+            "line": 690,
+            "description": "get raw result",
+            "itemtype": "method",
+            "name": "raw",
+            "params": [
+                {
+                    "name": "output",
+                    "description": "",
+                    "type": "Object"
+                }
+            ],
+            "return": {
+                "description": "cmd result, can have multiple content format. See Query.SUPPORTED_FORMATS",
+                "type": "Object"
+            },
+            "class": "WMIResult",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\wmi-query.js",
+            "line": 700,
+            "description": "use to join/split output lines",
+            "itemtype": "property",
+            "name": "LINESEP",
+            "type": "String",
+            "static": 1,
+            "access": "private",
+            "tagname": "",
+            "final": 1,
+            "class": "WMIResult",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\wmi-query.js",
+            "line": 710,
+            "description": "output to array of line",
+            "itemtype": "method",
+            "name": "splitOutput",
+            "static": 1,
+            "access": "private",
+            "tagname": "",
+            "class": "WMIResult",
+            "module": "wmi-query"
+        }
+    ],
+    "warnings": [
+        {
+            "message": "Missing item type\nchecking simple error on unexisting alias",
+            "line": " src\\test\\wmi-query.js:38"
+        },
+        {
+            "message": "Missing item type\nchecking error on misplaced switch",
+            "line": " src\\test\\wmi-query.js:50"
+        },
+        {
+            "message": "Missing item type\ncheck alias list",
+            "line": " src\\test\\wmi-query.js:78"
+        },
+        {
+            "message": "Missing item type\ncall check, \nin order to work everywhere we'll get first service not started and try\nto start it, then stop it.\nexcept if tested_service has been set;",
+            "line": " src\\test\\wmi-query.js:106"
+        }
+    ]
+}
