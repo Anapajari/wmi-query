@@ -33,12 +33,12 @@ I needed a way to check state, start/stop services on a couple of remote compute
 Then Microsoft announced there nano server edition which is heavily relying on wmi so I though it was a good time to start learning more about it.
 
 ## Installation
+Since I haven't publish this to npm yet and there is no dependency, just download wmi-query file and require it.
 
+I'm really planning on publishing this to npm, so when it will be done just do:
 ```
 npm install wmi-query
 ```
-**OR**
-As there is no dependency, just download wmi-query file and require it.
 
 ## API Reference
 [Documentation](docs/index.html) can be found [here](docs/index.html).
