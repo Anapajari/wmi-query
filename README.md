@@ -41,7 +41,7 @@ npm install wmi-query
 ```
 
 ## API Reference
-[Documentation](docs/index.html) can be found [here](docs/index.html).
+[Documentation](http://anapajari.github.io/wmi-query/docs.html) can be found [here](http://anapajari.github.io/wmi-query/docs.html).
 
 
 ## Contributors
