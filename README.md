@@ -53,4 +53,4 @@ I did mt best to write clean code but if you have any question just ask.
 MIT.
 
 ## Author
-Matthieu
+Matthieu Bourgeois
