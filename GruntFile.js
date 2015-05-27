@@ -52,7 +52,6 @@ module.exports = function(grunt) {
                     }
                 }
             }
-            
         },
         publish : {
             main : {
@@ -73,7 +72,7 @@ module.exports = function(grunt) {
 
     /** TASKS **/
     grunt.registerTask('check', 'jshint');
-    grunt.registerTask('test', 'nodeunit');
+    grunt.registerTask('test', ['jshint', 'nodeunit']);
     grunt.registerTask('docs', ['clean:docs', 'yuidoc']);
     grunt.registerTask('copy-src', ['clean:dist', 'copy:src', 'copy:package.json']);
     grunt.registerTask('build', [ 'check',  'test', 'docs', 'copy-src']);

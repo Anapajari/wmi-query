@@ -1,7 +1,7 @@
 {
   "name": "wmi-query",
-  "version": "<%= pkg.version %>",
-  "description": "WMI query module. Warning this uses wmic so it must be run on a windows system",
+  "version": "0.1.0",
+  "description": "Easy WMI query. Warning this uses wmic so it must be run on a windows system",
   "main": "wmi-query.js",
   "scripts": {
     "test": "nodeunit"

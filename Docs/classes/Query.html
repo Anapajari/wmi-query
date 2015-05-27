@@ -170,6 +170,30 @@
 
                             </li>
                             <li class="param">
+                                    <code class="param-name optional">[user]</code>
+                                    <span class="type">String</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>A user name to be used by WMIC when accessing the /NODE computers
+or computers specified in aliases.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[password]</code>
+                                    <span class="type"></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>A password to be used by WMIC when accessing the /NODE computers
+(possibly including the local computer)</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
                                     <code class="param-name optional">[verb]</code>
                                     <span class="type">String</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
@@ -385,6 +409,10 @@ wq.get({
                                 <a href="#property_parser">parser</a>
 
                             </li>
+                            <li class="index-item property">
+                                <a href="#property_password">password</a>
+
+                            </li>
                             <li class="index-item property private">
                                 <a href="#property_SUPPORTED_FORMATS">SUPPORTED_FORMATS</a>
 
@@ -394,6 +422,10 @@ wq.get({
                                 <a href="#property_SUPPORTED_VERBS">SUPPORTED_VERBS</a>
 
                                     <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_user">user</a>
+
                             </li>
                             <li class="index-item property">
                                 <a href="#property_verb">verb</a>
@@ -428,7 +460,7 @@ wq.get({
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_wmi-query.js.html#l313"><code>src\wmi-query.js:313</code></a>
+        <a href="../files/src_wmi-query.js.html#l357"><code>src\wmi-query.js:357</code></a>
         </p>
 
 
@@ -461,7 +493,7 @@ Weird usage of WINDIR path is explained <a href="http://stackoverflow.com/questi
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_wmi-query.js.html#l262"><code>src\wmi-query.js:262</code></a>
+        <a href="../files/src_wmi-query.js.html#l302"><code>src\wmi-query.js:302</code></a>
         </p>
 
 
@@ -503,7 +535,7 @@ Weird usage of WINDIR path is explained <a href="http://stackoverflow.com/questi
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_wmi-query.js.html#l445"><code>src\wmi-query.js:445</code></a>
+        <a href="../files/src_wmi-query.js.html#l489"><code>src\wmi-query.js:489</code></a>
         </p>
 
 
@@ -575,7 +607,7 @@ wmi.call({node:'host', alias:'service', where: 'Name=&quot;Tomcat7&quot;', actio
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_wmi-query.js.html#l299"><code>src\wmi-query.js:299</code></a>
+        <a href="../files/src_wmi-query.js.html#l343"><code>src\wmi-query.js:343</code></a>
         </p>
 
 
@@ -613,7 +645,7 @@ wmi.call({node:'host', alias:'service', where: 'Name=&quot;Tomcat7&quot;', actio
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_wmi-query.js.html#l349"><code>src\wmi-query.js:349</code></a>
+        <a href="../files/src_wmi-query.js.html#l393"><code>src\wmi-query.js:393</code></a>
         </p>
 
 
@@ -676,7 +708,7 @@ an err key containing parsed error output if an error occured</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_wmi-query.js.html#l423"><code>src\wmi-query.js:423</code></a>
+        <a href="../files/src_wmi-query.js.html#l467"><code>src\wmi-query.js:467</code></a>
         </p>
 
 
@@ -762,7 +794,7 @@ wmi.get({node:'host', alias:'service', where: 'Started=FALSE', format:'JSON'}, f
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_wmi-query.js.html#l396"><code>src\wmi-query.js:396</code></a>
+        <a href="../files/src_wmi-query.js.html#l440"><code>src\wmi-query.js:440</code></a>
         </p>
 
 
@@ -838,7 +870,7 @@ wmi.listAlias({node : 'localhost'}, function(r) {
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_wmi-query.js.html#l204"><code>src\wmi-query.js:204</code></a>
+                            <a href="../files/src_wmi-query.js.html#l244"><code>src\wmi-query.js:244</code></a>
                             </p>
                     
                     
@@ -862,7 +894,7 @@ wmi.listAlias({node : 'localhost'}, function(r) {
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_wmi-query.js.html#l166"><code>src\wmi-query.js:166</code></a>
+                            <a href="../files/src_wmi-query.js.html#l206"><code>src\wmi-query.js:206</code></a>
                             </p>
                     
                     
@@ -886,7 +918,7 @@ wmi.listAlias({node : 'localhost'}, function(r) {
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_wmi-query.js.html#l184"><code>src\wmi-query.js:184</code></a>
+                            <a href="../files/src_wmi-query.js.html#l224"><code>src\wmi-query.js:224</code></a>
                             </p>
                     
                     
@@ -910,7 +942,7 @@ wmi.listAlias({node : 'localhost'}, function(r) {
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_wmi-query.js.html#l131"><code>src\wmi-query.js:131</code></a>
+                            <a href="../files/src_wmi-query.js.html#l143"><code>src\wmi-query.js:143</code></a>
                             </p>
                     
                     
@@ -934,7 +966,31 @@ wmi.listAlias({node : 'localhost'}, function(r) {
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_wmi-query.js.html#l246"><code>src\wmi-query.js:246</code></a>
+                            <a href="../files/src_wmi-query.js.html#l286"><code>src\wmi-query.js:286</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_password" class="property item">
+                        <h3 class="name"><code>password</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_wmi-query.js.html#l173"><code>src\wmi-query.js:173</code></a>
                             </p>
                     
                     
@@ -961,7 +1017,7 @@ wmi.listAlias({node : 'localhost'}, function(r) {
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_wmi-query.js.html#l387"><code>src\wmi-query.js:387</code></a>
+                            <a href="../files/src_wmi-query.js.html#l431"><code>src\wmi-query.js:431</code></a>
                             </p>
                     
                     
@@ -989,7 +1045,7 @@ wmi.listAlias({node : 'localhost'}, function(r) {
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_wmi-query.js.html#l379"><code>src\wmi-query.js:379</code></a>
+                            <a href="../files/src_wmi-query.js.html#l423"><code>src\wmi-query.js:423</code></a>
                             </p>
                     
                     
@@ -998,6 +1054,30 @@ wmi.listAlias({node : 'localhost'}, function(r) {
                         <div class="description">
                             <p>List of the implemented verbs</p>
                     
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_user" class="property item">
+                        <h3 class="name"><code>user</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_wmi-query.js.html#l159"><code>src\wmi-query.js:159</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            
                         </div>
                     
                     
@@ -1014,7 +1094,7 @@ wmi.listAlias({node : 'localhost'}, function(r) {
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_wmi-query.js.html#l232"><code>src\wmi-query.js:232</code></a>
+                            <a href="../files/src_wmi-query.js.html#l272"><code>src\wmi-query.js:272</code></a>
                             </p>
                     
                     
@@ -1038,7 +1118,7 @@ wmi.listAlias({node : 'localhost'}, function(r) {
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_wmi-query.js.html#l147"><code>src\wmi-query.js:147</code></a>
+                            <a href="../files/src_wmi-query.js.html#l187"><code>src\wmi-query.js:187</code></a>
                             </p>
                     
                     

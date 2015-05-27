@@ -6,9 +6,8 @@
           https://quickleft.com/blog/creating-and-publishing-a-node-js-module/
           https://github.com/Jam3/jam3-lesson-module-creation
   TODO3 : test support of specific xsl 
-  TODO3 : Think about implementing output and record switch. FTM I'm really not sure
-          they would provide any advantage over using nodejs to write query output 
-          to file.
+  TODO3 : add missing switch especially output to file
+          see https://technet.microsoft.com/en-us/library/cc787035%28v=ws.10%29.aspx
 */
 
 var util = require('util'),
@@ -30,7 +29,7 @@ var util = require('util'),
             console.log(r.data[i].alias);
         }
     });
-    //start a service named example on remote computer
+    //start a service named demo on remote computer
     wmi.call({node:"remote_computer", alias:'service', where: 'Name="example"', action:'startservice', format:'JSON'}, function(r) {
         if (r.err) {
             console.log("Start service failed with message:", r.err);
@@ -138,6 +137,8 @@ var Query = function(options) {
             this.parser = options.parser;
     }
 };
+//warning when using multiples node
+//we can't tell which line belong to which one
 Object.defineProperties(Query.prototype, {
     /**
     @property node
@@ -146,8 +147,6 @@ Object.defineProperties(Query.prototype, {
     node : {
         set : function (n) {
             if (util.isArray(n)) {
-                //warning when using multiples node
-                //we might not be able to find which line belong to which one
                 this._node = n.join(',');
             } else if (typeof n == 'string') {
                 this._node = n;
@@ -440,7 +439,7 @@ Query.SUPPORTED_FORMATS = ['XML', 'CSV', 'HFORM', 'HTABLE', 'JSON', 'RAW'];
 
 /**
 list all available alias.
-Note : options param accept the same keys as Query constructor but some of them will be overriden 
+Note : options param accept the same keys than Query constructor but some of them will be over-ride 
 to produce expected result.
 @method listAlias
 @static
@@ -448,14 +447,14 @@ to produce expected result.
 @param [callback] callback to be executed once the command result has been parsed
 @async
 @example
-    //get alias list and log their name and caption
+    //get alias list and log their name
     wmi.listAlias({node : 'localhost'}, function(r) {
         for(var i=0; i<r.data.length; i++) {
             console.log(r.data[i].alias, '-', r.data[i].caption);
         }
     });
 **/
-Query.listAlias  = function (options, callback) { 
+Query.listAlias  = function (options, callback) {
     //setting expected and cleaning unexpected options 
     options.verb = "NO_VERB";
     options.help = true;
@@ -465,7 +464,7 @@ Query.listAlias  = function (options, callback) {
     new Query(options).exec(callback);
 };
 
-/** 
+/**
 build and exec get query 
 @method get
 @static
@@ -505,12 +504,10 @@ Query.call = function(options, callback) {
     new Query(options).exec(callback);
 };
 
-  /**
-  -------------Result class --------------- 
-  **/
+  /*-------------Result class --------------- */
 
 /**
-WMI result class, contains query raw output and parsed results.
+WMI result class.
 @class WMIResult
 @constructor
 @param output {Object} object containing cmd output
@@ -570,8 +567,6 @@ WMIResult.prototype.findParserFor= function (query) {
     } else if (query.verb == 'call' && query.format == 'JSON') {
         this.parser = this.callToJSON;
     } else {
-        // the following format 'XML', 'CSV', 'HFORM', 'HTABLE', 
-        // will be output as raw since no parsing is done
         this.parser = this.raw;
     }
 };
@@ -711,15 +706,15 @@ use to join/split output lines
 @final
 */
 WMIResult.LINESEP = "###SEP###";
+
 /**
-split output into array of line
+output to array of line
 @method splitOutput
 @static
 @private
 */
 WMIResult.splitOutput = function(output) {
-    //splitting output, 4 or more empty lines means new items
-    //then removing last newline to ease parsing
+    //splitting output, 4 empty lines means new items
     return output.replace(/(\r?\n|\r){4,}/g, "£"+WMIResult.LINESEP+"£").replace(/(\r?\n|\r)+/g, "£").split("£");
 };
 

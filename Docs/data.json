@@ -38,7 +38,7 @@
             "namespaces": {},
             "tag": "module",
             "file": "src\\wmi-query.js",
-            "line": 465,
+            "line": 509,
             "example": [
                 "\n    //requiring module\n    var wmi = require(\"wmi-query\");\n    //log os of localhost\n    wmi.get({node : 'localhost', format:'JSON' , alias:'os', field:'Name'}, function(r) {\n        console.log('OS is', r.data[0].Name);\n    });\n    //list of available alias on remote server\n    wmi.listAlias({node : 'remote_computer', format:'JSON' }, function(r) {\n        for(var i=0; i<r.data.length; i++) {\n            console.log(r.data[i].alias);\n        }\n    });\n    //start a service named demo on remote computer\n    wmi.call({node:\"remote_computer\", alias:'service', where: 'Name=\"example\"', action:'startservice', format:'JSON'}, function(r) {\n        if (r.err) {\n            console.log(\"Start service failed with message:\", r.err);\n        } else {\n            console.log(\"Command has returned\n        }\n    });\n"
             ]
@@ -76,6 +76,17 @@
                             "name": "node",
                             "description": "node(s) to query, can contains multiples server name separated by comma: \"pc1,pc2\" or array of node",
                             "type": "String|array",
+                            "optional": true
+                        },
+                        {
+                            "name": "user",
+                            "description": "A user name to be used by WMIC when accessing the /NODE computers \n                      or computers specified in aliases.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "password",
+                            "description": "A password to be used by WMIC when accessing the /NODE computers \n                          (possibly including the local computer)",
                             "optional": true
                         },
                         {
@@ -152,7 +163,7 @@
             "module": "wmi-query",
             "namespace": "",
             "file": "src\\wmi-query.js",
-            "line": 465,
+            "line": 509,
             "description": "WMI result class.",
             "is_constructor": 1,
             "params": [
@@ -210,7 +221,7 @@
         },
         {
             "file": "src\\wmi-query.js",
-            "line": 131,
+            "line": 143,
             "itemtype": "property",
             "name": "node",
             "type": "String",
@@ -219,7 +230,25 @@
         },
         {
             "file": "src\\wmi-query.js",
-            "line": 147,
+            "line": 159,
+            "itemtype": "property",
+            "name": "user",
+            "type": "String",
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\wmi-query.js",
+            "line": 173,
+            "itemtype": "property",
+            "name": "password",
+            "type": "String",
+            "class": "Query",
+            "module": "wmi-query"
+        },
+        {
+            "file": "src\\wmi-query.js",
+            "line": 187,
             "itemtype": "property",
             "name": "where",
             "type": "String",
@@ -228,7 +257,7 @@
         },
         {
             "file": "src\\wmi-query.js",
-            "line": 166,
+            "line": 206,
             "itemtype": "property",
             "name": "field",
             "type": "String",
@@ -237,7 +266,7 @@
         },
         {
             "file": "src\\wmi-query.js",
-            "line": 184,
+            "line": 224,
             "itemtype": "property",
             "name": "format",
             "type": "String",
@@ -246,7 +275,7 @@
         },
         {
             "file": "src\\wmi-query.js",
-            "line": 204,
+            "line": 244,
             "itemtype": "property",
             "name": "cmd",
             "type": "String",
@@ -255,7 +284,7 @@
         },
         {
             "file": "src\\wmi-query.js",
-            "line": 232,
+            "line": 272,
             "itemtype": "property",
             "name": "verb",
             "type": "String",
@@ -264,7 +293,7 @@
         },
         {
             "file": "src\\wmi-query.js",
-            "line": 246,
+            "line": 286,
             "itemtype": "property",
             "name": "parser",
             "type": "String|Function",
@@ -273,7 +302,7 @@
         },
         {
             "file": "src\\wmi-query.js",
-            "line": 262,
+            "line": 302,
             "description": "use object properties to build command",
             "itemtype": "method",
             "name": "buildCmd",
@@ -283,7 +312,7 @@
         },
         {
             "file": "src\\wmi-query.js",
-            "line": 299,
+            "line": 343,
             "description": "check command format according to format property",
             "itemtype": "method",
             "name": "checkCmd",
@@ -294,7 +323,7 @@
         },
         {
             "file": "src\\wmi-query.js",
-            "line": 313,
+            "line": 357,
             "description": "append format instruction to cmd.\nWeird usage of WINDIR path is explained <a href=\"http://stackoverflow.com/questions/9673057/wmic-error-invalid-xsl-format-in-windows7\">here</a>",
             "itemtype": "method",
             "name": "appendFormat",
@@ -305,7 +334,7 @@
         },
         {
             "file": "src\\wmi-query.js",
-            "line": 349,
+            "line": 393,
             "description": "exec command and fire callback.\nParams of the callback is an object with a cmd key containing de wmic command and either\na data key containing parsed success output if no error occured\nan err key containing parsed error output if an error occured",
             "itemtype": "method",
             "name": "exec",
@@ -322,7 +351,7 @@
         },
         {
             "file": "src\\wmi-query.js",
-            "line": 379,
+            "line": 423,
             "description": "List of the implemented verbs",
             "itemtype": "property",
             "name": "SUPPORTED_VERBS",
@@ -335,7 +364,7 @@
         },
         {
             "file": "src\\wmi-query.js",
-            "line": 387,
+            "line": 431,
             "description": "List of the supported output format",
             "itemtype": "property",
             "name": "SUPPORTED_FORMATS",
@@ -348,7 +377,7 @@
         },
         {
             "file": "src\\wmi-query.js",
-            "line": 396,
+            "line": 440,
             "description": "list all available alias.\nNote : options param accept the same keys than Query constructor but some of them will be over-ride \nto produce expected result.",
             "itemtype": "method",
             "name": "listAlias",
@@ -373,7 +402,7 @@
         },
         {
             "file": "src\\wmi-query.js",
-            "line": 423,
+            "line": 467,
             "description": "build and exec get query",
             "itemtype": "method",
             "name": "get",
@@ -398,7 +427,7 @@
         },
         {
             "file": "src\\wmi-query.js",
-            "line": 445,
+            "line": 489,
             "description": "build and exec call query",
             "itemtype": "method",
             "name": "call",
@@ -424,7 +453,7 @@
         },
         {
             "file": "src\\wmi-query.js",
-            "line": 484,
+            "line": 528,
             "description": "Returns parsed data",
             "itemtype": "method",
             "name": "data",
@@ -437,7 +466,7 @@
         },
         {
             "file": "src\\wmi-query.js",
-            "line": 497,
+            "line": 541,
             "description": "Returns parsed error",
             "itemtype": "method",
             "name": "error",
@@ -450,7 +479,7 @@
         },
         {
             "file": "src\\wmi-query.js",
-            "line": 510,
+            "line": 554,
             "description": "Find best parser for query",
             "itemtype": "method",
             "name": "findParserFor",
@@ -470,7 +499,7 @@
         },
         {
             "file": "src\\wmi-query.js",
-            "line": 530,
+            "line": 574,
             "description": "command err to JSON parser",
             "itemtype": "method",
             "name": "errorToJSON",
@@ -490,7 +519,7 @@
         },
         {
             "file": "src\\wmi-query.js",
-            "line": 552,
+            "line": 596,
             "description": "JSON parser for \"get\" command output",
             "itemtype": "method",
             "name": "getToJSON",
@@ -510,7 +539,7 @@
         },
         {
             "file": "src\\wmi-query.js",
-            "line": 609,
+            "line": 653,
             "description": "JSON parser for \"help\" command output",
             "itemtype": "method",
             "name": "getHelpToJSON",
@@ -530,7 +559,7 @@
         },
         {
             "file": "src\\wmi-query.js",
-            "line": 646,
+            "line": 690,
             "description": "get raw result",
             "itemtype": "method",
             "name": "raw",
@@ -550,7 +579,7 @@
         },
         {
             "file": "src\\wmi-query.js",
-            "line": 656,
+            "line": 700,
             "description": "use to join/split output lines",
             "itemtype": "property",
             "name": "LINESEP",
@@ -564,7 +593,7 @@
         },
         {
             "file": "src\\wmi-query.js",
-            "line": 666,
+            "line": 710,
             "description": "output to array of line",
             "itemtype": "method",
             "name": "splitOutput",

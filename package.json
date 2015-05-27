@@ -1,6 +1,6 @@
 {
   "name": "wmi-query",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Grunt project of wmi-query npm module",
   "author": {
     "name": "Matthieu Bourgeois",
@@ -13,7 +13,7 @@
     }
   ],
   "directories": {
-    "test": "tests"
+    "test": "module tests"
   },
   "devDependencies": {
     "grunt": ">0.4.1",
