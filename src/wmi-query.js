@@ -12,6 +12,7 @@
 */
 
 var util = require('util'),
+    fs = require('fs'),
     cp_exec = require('child_process').exec;
 
 /**
@@ -322,9 +323,7 @@ Query.prototype.buildCmd = function() {
         if (this._where) {
             cmd += ' where ('+this._where+')';
         }
-        if (this.verb == 'NO_VERB') {
-            //do nothing
-        } else if (this.verb == 'get') {
+        if (this.verb == 'get') {
             cmd += ' get ';
             if (this._field) {
                 cmd += ' '+this._field;
@@ -412,7 +411,7 @@ Query.prototype.exec = function(callback) {
         callback({err: "Unsupported "+this.verb, stderr:""});
         return;
     }
-    var q = this; //stored to be available in callback
+    var q = this; //stored to be available in cp_exec callback
     cp_exec(this.cmd,{"encoding":"utf8", "timeout": this.timeout}, function(err, stdout, stderr) {
         var error,
             result,
